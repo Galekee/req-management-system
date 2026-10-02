@@ -48,7 +48,7 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Дашборд</h1>
-          <p className="page-subtitle">Талаптарды басқару жүйесінің жалпы көрінісі</p>
+          <p className="page-subtitle">АЖ-49 · Жобаның ағымдағы жай-күйі</p>
         </div>
         <Link to="/requirements/new" className="btn btn-primary">
           + Жаңа талап
@@ -60,29 +60,29 @@ export default function Dashboard() {
         <div className="stat-card">
           <span className="stat-label">Барлық талаптар</span>
           <span className="stat-value">{stats.total}</span>
-          <span className="stat-badge" style={{ background: '#1e3a5f', color: '#60a5fa' }}>Жалпы</span>
+          <span className="stat-badge" style={{ background: 'rgba(91,110,245,0.12)', color: '#818cf8' }}>Жалпы</span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Бекітілген</span>
-          <span className="stat-value" style={{ color: '#86efac' }}>{approved}</span>
-          <span className="stat-badge" style={{ background: '#14532d', color: '#86efac' }}>
+          <span className="stat-value" style={{ color: 'var(--green)' }}>{approved}</span>
+          <span className="stat-badge" style={{ background: 'rgba(61,214,140,0.12)', color: 'var(--green)' }}>
             {stats.total ? Math.round(approved / stats.total * 100) : 0}%
           </span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Орындалуда</span>
-          <span className="stat-value" style={{ color: '#a5b4fc' }}>{inProgress}</span>
-          <span className="stat-badge" style={{ background: '#312e81', color: '#a5b4fc' }}>Белсенді</span>
+          <span className="stat-value" style={{ color: 'var(--purple)' }}>{inProgress}</span>
+          <span className="stat-badge" style={{ background: 'rgba(192,132,252,0.12)', color: 'var(--purple)' }}>Белсенді</span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Функционалды</span>
           <span className="stat-value">{functional}</span>
-          <span className="stat-badge" style={{ background: '#1e3a5f', color: '#60a5fa' }}>ФТ</span>
+          <span className="stat-badge" style={{ background: 'rgba(96,165,250,0.1)', color: 'var(--blue)' }}>ФТ</span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Функционалды емес</span>
           <span className="stat-value">{nonFunctional}</span>
-          <span className="stat-badge" style={{ background: '#2d1b69', color: '#c4b5fd' }}>ФЕТ</span>
+          <span className="stat-badge" style={{ background: 'rgba(192,132,252,0.1)', color: 'var(--purple)' }}>ФЕТ</span>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export default function Dashboard() {
               <Pie data={statusData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" paddingAngle={3}>
                 {statusData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Pie>
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0' }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 6, color: 'var(--text)', fontSize: 12 }} />
               <Legend formatter={(v) => <span style={{ color: '#94a3b8', fontSize: 12 }}>{v}</span>} />
             </PieChart>
           </ResponsiveContainer>
@@ -107,7 +107,7 @@ export default function Dashboard() {
             <BarChart data={priorityData} barSize={36}>
               <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0' }} />
+              <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 6, color: 'var(--text)', fontSize: 12 }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {priorityData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Bar>
@@ -122,7 +122,7 @@ export default function Dashboard() {
               <BarChart data={assigneeData} barSize={48} layout="vertical">
                 <XAxis type="number" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 13 }} axisLine={false} tickLine={false} width={80} />
-                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0' }} />
+                <Tooltip contentStyle={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 6, color: 'var(--text)', fontSize: 12 }} />
                 <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>

@@ -36,10 +36,10 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="logo-icon">ТБ</div>
+        <div className="logo-icon">RT</div>
         <div className="logo-text">
-          <span className="logo-title">Талаптарды</span>
-          <span className="logo-sub">басқару жүйесі</span>
+          <span className="logo-title">ReqTrack</span>
+          <span className="logo-sub">АЖ-49 · 2026</span>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ function Sidebar() {
       <div className="sidebar-footer">
         <div className="team-badge">
           <span className="team-dot"></span>
-          АЖ-47 командасы
+          <span>АЖ-49 командасы</span>
         </div>
       </div>
     </aside>
