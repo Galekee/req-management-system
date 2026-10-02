@@ -1,0 +1,7 @@
+{
+  "name": "freelanzer-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node --experimental-sqlite src/index.js"
+  }
+}
