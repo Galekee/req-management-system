@@ -29,7 +29,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') { cors(res); res.writeHead(204); res.end(); return; }
 
   const { pathname } = parse(req.url, true);
-  const parts = pathname.split('/').filter(Boolean); // ['api', 'projects', ...]
+  const parts = pathname.split('/').filter(Boolean);
 
   // GET /api/stats
   if (req.method === 'GET' && pathname === '/api/stats') {
@@ -40,13 +40,13 @@ const server = http.createServer(async (req, res) => {
     const byCategory = db.prepare('SELECT category, COUNT(*) as count FROM projects GROUP BY category').all();
     const byStatus = db.prepare('SELECT status, COUNT(*) as count FROM projects GROUP BY status').all();
     const topFreelancers = db.prepare('SELECT freelancer_name, COUNT(*) as count FROM proposals GROUP BY freelancer_name ORDER BY count DESC LIMIT 5').all();
-    return json(res, { totalProjects, openProjects, totalProposals, totalRequirements, byCategory, byStatus, topFreelancers });
+    const unreadCount = db.prepare('SELECT COUNT(*) as c FROM notifications WHERE is_read=0').get().c;
+    return json(res, { totalProjects, openProjects, totalProposals, totalRequirements, byCategory, byStatus, topFreelancers, unreadCount });
   }
 
   // GET /api/projects
   if (req.method === 'GET' && pathname === '/api/projects') {
-    const projects = db.prepare('SELECT * FROM projects ORDER BY created_at DESC').all();
-    return json(res, projects);
+    return json(res, db.prepare('SELECT * FROM projects ORDER BY created_at DESC').all());
   }
 
   // POST /api/projects
@@ -55,6 +55,9 @@ const server = http.createServer(async (req, res) => {
     const id = randomUUID();
     db.prepare('INSERT INTO projects (id,title,description,category,budget,deadline,client_name,skills) VALUES (?,?,?,?,?,?,?,?)')
       .run(id, b.title, b.description, b.category||'web', b.budget||0, b.deadline||'', b.client_name||'Клиент', b.skills||'');
+    // Create notification
+    db.prepare('INSERT INTO notifications (id,type,title,message) VALUES (?,?,?,?)')
+      .run(randomUUID(), 'project', 'Жаңа жоба жарияланды', `"${b.title}" жобасы платформада жарияланды`);
     return json(res, db.prepare('SELECT * FROM projects WHERE id=?').get(id), 201);
   }
 
@@ -68,7 +71,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // PUT /api/projects/:id
-  if (req.method === 'PUT' && parts[1] === 'projects' && parts[2]) {
+  if (req.method === 'PUT' && parts[1] === 'projects' && parts[2] && !parts[3]) {
     const b = await body(req);
     db.prepare('UPDATE projects SET title=?,description=?,category=?,budget=?,deadline=?,status=?,client_name=?,skills=? WHERE id=?')
       .run(b.title, b.description, b.category, b.budget, b.deadline, b.status, b.client_name, b.skills, parts[2]);
@@ -89,6 +92,9 @@ const server = http.createServer(async (req, res) => {
     const id = randomUUID();
     db.prepare('INSERT INTO proposals (id,project_id,freelancer_name,cover_letter,bid_amount,delivery_days) VALUES (?,?,?,?,?,?)')
       .run(id, parts[2], b.freelancer_name, b.cover_letter, b.bid_amount||0, b.delivery_days||7);
+    const proj = db.prepare('SELECT title FROM projects WHERE id=?').get(parts[2]);
+    db.prepare('INSERT INTO notifications (id,type,title,message) VALUES (?,?,?,?)')
+      .run(randomUUID(), 'proposal', 'Жаңа өтінім келді', `"${proj?.title || 'Жоба'}" жобасына ${b.freelancer_name} өтінім берді`);
     return json(res, db.prepare('SELECT * FROM proposals WHERE id=?').get(id), 201);
   }
 
@@ -107,6 +113,55 @@ const server = http.createServer(async (req, res) => {
     db.prepare('UPDATE requirements SET title=?,description=?,type=?,priority=?,status=? WHERE id=?')
       .run(b.title, b.description, b.type, b.priority, b.status, parts[2]);
     return json(res, db.prepare('SELECT * FROM requirements WHERE id=?').get(parts[2]));
+  }
+
+  // GET /api/freelancers
+  if (req.method === 'GET' && pathname === '/api/freelancers') {
+    const freelancers = db.prepare('SELECT * FROM freelancers ORDER BY jobs_done DESC').all();
+    const result = freelancers.map(f => {
+      const reviews = db.prepare('SELECT * FROM reviews WHERE freelancer_id=? ORDER BY created_at DESC').all(f.id);
+      const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : 0;
+      return { ...f, reviews, avgRating: Number(avgRating) };
+    });
+    return json(res, result);
+  }
+
+  // GET /api/freelancers/:id
+  if (req.method === 'GET' && parts[1] === 'freelancers' && parts[2]) {
+    const f = db.prepare('SELECT * FROM freelancers WHERE id=?').get(parts[2]);
+    if (!f) return json(res, { error: 'Not found' }, 404);
+    const reviews = db.prepare('SELECT * FROM reviews WHERE freelancer_id=? ORDER BY created_at DESC').all(parts[2]);
+    const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : 0;
+    return json(res, { ...f, reviews, avgRating: Number(avgRating) });
+  }
+
+  // POST /api/freelancers/:id/reviews
+  if (req.method === 'POST' && parts[1] === 'freelancers' && parts[3] === 'reviews') {
+    const b = await body(req);
+    const id = randomUUID();
+    db.prepare('INSERT INTO reviews (id,freelancer_id,client_name,rating,comment) VALUES (?,?,?,?,?)')
+      .run(id, parts[2], b.client_name, b.rating||5, b.comment||'');
+    const f = db.prepare('SELECT name FROM freelancers WHERE id=?').get(parts[2]);
+    db.prepare('INSERT INTO notifications (id,type,title,message) VALUES (?,?,?,?)')
+      .run(randomUUID(), 'review', 'Жаңа пікір қалдырылды', `${b.client_name} ${f?.name || 'фрилансерге'} ${b.rating} жұлдыз берді`);
+    return json(res, db.prepare('SELECT * FROM reviews WHERE id=?').get(id), 201);
+  }
+
+  // GET /api/notifications
+  if (req.method === 'GET' && pathname === '/api/notifications') {
+    return json(res, db.prepare('SELECT * FROM notifications ORDER BY created_at DESC').all());
+  }
+
+  // PUT /api/notifications/read-all
+  if (req.method === 'PUT' && pathname === '/api/notifications/read-all') {
+    db.prepare('UPDATE notifications SET is_read=1').run();
+    return json(res, { ok: true });
+  }
+
+  // PUT /api/notifications/:id/read
+  if (req.method === 'PUT' && parts[1] === 'notifications' && parts[3] === 'read') {
+    db.prepare('UPDATE notifications SET is_read=1 WHERE id=?').run(parts[2]);
+    return json(res, { ok: true });
   }
 
   json(res, { error: 'Not found' }, 404);
