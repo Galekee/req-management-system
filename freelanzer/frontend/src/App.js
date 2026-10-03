@@ -219,7 +219,18 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
       onMouseLeave={() => setCollapsed(true)}
     >
       <div className="sidebar-brand">
-        <div className="brand-logo"><span>F</span></div>
+        <div className="brand-logo" style={{ background: 'none', padding: 0, boxShadow: 'none' }}>
+          <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="9" fill="url(#logo-grad-sb)"/>
+            <defs>
+              <linearGradient id="logo-grad-sb" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="var(--accent)"/>
+                <stop offset="100%" stopColor="var(--purple, var(--accent))"/>
+              </linearGradient>
+            </defs>
+            <path d="M9 8h14v3.5H12.5v3h9v3h-9v6.5H9V8z" fill="white"/>
+          </svg>
+        </div>
         {!collapsed && (
           <div>
             <div className="brand-name">Freelanzer</div>
@@ -329,7 +340,18 @@ function TopNav({ mobileOpen, setMobileOpen }) {
         {mobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
       <div className="topnav-brand">
-        <div className="brand-logo" style={{ width: 30, height: 30, fontSize: 13, borderRadius: 8 }}><span>F</span></div>
+        <div className="brand-logo" style={{ width: 30, height: 30, background: 'none', padding: 0, boxShadow: 'none' }}>
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="9" fill="url(#logo-grad-tn)"/>
+            <defs>
+              <linearGradient id="logo-grad-tn" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="var(--accent)"/>
+                <stop offset="100%" stopColor="var(--purple, var(--accent))"/>
+              </linearGradient>
+            </defs>
+            <path d="M9 8h14v3.5H12.5v3h9v3h-9v6.5H9V8z" fill="white"/>
+          </svg>
+        </div>
         <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>Freelanzer</span>
       </div>
 

@@ -36,12 +36,10 @@
 
 .brand-logo {
   width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 16px; color: #fff;
   flex-shrink: 0;
-  box-shadow: 0 0 20px var(--accent-glow);
+  overflow: hidden;
 }
 
 .brand-name { font-weight: 700; font-size: 15px; color: var(--text); letter-spacing: -0.3px; }

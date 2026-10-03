@@ -10,7 +10,7 @@ db.exec(`
     role TEXT DEFAULT 'client',
     name TEXT NOT NULL,
     is_approved INTEGER DEFAULT 1,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
 
   CREATE TABLE IF NOT EXISTS projects (
@@ -25,7 +25,7 @@ db.exec(`
     client_name TEXT DEFAULT 'Клиент',
     client_id TEXT,
     skills TEXT DEFAULT '',
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
 
   CREATE TABLE IF NOT EXISTS milestones (
@@ -33,7 +33,7 @@ db.exec(`
     project_id TEXT NOT NULL,
     title TEXT NOT NULL,
     is_done INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now')),
+    created_at TEXT DEFAULT (datetime('now', '+5 hours')),
     FOREIGN KEY (project_id) REFERENCES projects(id)
   );
 
@@ -46,7 +46,7 @@ db.exec(`
     bid_amount INTEGER DEFAULT 0,
     delivery_days INTEGER DEFAULT 7,
     status TEXT DEFAULT 'pending',
-    created_at TEXT DEFAULT (datetime('now')),
+    created_at TEXT DEFAULT (datetime('now', '+5 hours')),
     FOREIGN KEY (project_id) REFERENCES projects(id)
   );
 
@@ -58,7 +58,7 @@ db.exec(`
     type TEXT DEFAULT 'functional',
     priority TEXT DEFAULT 'medium',
     status TEXT DEFAULT 'new',
-    created_at TEXT DEFAULT (datetime('now')),
+    created_at TEXT DEFAULT (datetime('now', '+5 hours')),
     FOREIGN KEY (project_id) REFERENCES projects(id)
   );
 
@@ -75,7 +75,7 @@ db.exec(`
     total_earned INTEGER DEFAULT 0,
     jobs_done INTEGER DEFAULT 0,
     is_approved INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
 
   CREATE TABLE IF NOT EXISTS portfolio (
@@ -85,7 +85,7 @@ db.exec(`
     description TEXT DEFAULT '',
     tech TEXT DEFAULT '',
     url TEXT DEFAULT '',
-    created_at TEXT DEFAULT (datetime('now')),
+    created_at TEXT DEFAULT (datetime('now', '+5 hours')),
     FOREIGN KEY (freelancer_id) REFERENCES freelancers(id)
   );
 
@@ -96,7 +96,7 @@ db.exec(`
     client_name TEXT NOT NULL,
     rating INTEGER DEFAULT 5,
     comment TEXT DEFAULT '',
-    created_at TEXT DEFAULT (datetime('now')),
+    created_at TEXT DEFAULT (datetime('now', '+5 hours')),
     FOREIGN KEY (freelancer_id) REFERENCES freelancers(id)
   );
 
@@ -108,7 +108,7 @@ db.exec(`
     from_name TEXT NOT NULL,
     content TEXT NOT NULL,
     is_read INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
 
   CREATE TABLE IF NOT EXISTS notifications (
@@ -118,7 +118,7 @@ db.exec(`
     message TEXT DEFAULT '',
     user_id TEXT,
     is_read INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
 `);
 
