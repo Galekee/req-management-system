@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Star, MapPin, DollarSign, Clock, Send, User, Edit3, Check } from 'lucide-react';
+import { Search, MapPin, Send, Edit3, Check, Plus, Trash2, ExternalLink } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
@@ -13,10 +13,13 @@ export default function FreelancerDashboard() {
   const [projects, setProjects] = useState([]);
   const [myProposals, setMyProposals] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [portfolio, setPortfolio] = useState([]);
   const [search, setSearch] = useState('');
   const [applyForm, setApplyForm] = useState({ projectId: null, cover_letter: '', bid_amount: '', delivery_days: '' });
   const [editProfile, setEditProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({});
+  const [showPortfolioForm, setShowPortfolioForm] = useState(false);
+  const [portForm, setPortForm] = useState({ title: '', description: '', tech: '', url: '' });
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +32,7 @@ export default function FreelancerDashboard() {
     setProfile(profRes.data);
     if (profRes.data) {
       setProfileForm({ name: profRes.data.name, title: profRes.data.title, bio: profRes.data.bio, skills: profRes.data.skills, hourly_rate: profRes.data.hourly_rate, location: profRes.data.location });
+      setPortfolio(profRes.data.portfolio || []);
       // load my proposals
       const myRes = await axios.get(`/api/freelancers/${profRes.data.id}/proposals`);
       setMyProposals(myRes.data);
@@ -103,6 +107,7 @@ export default function FreelancerDashboard() {
         {[
           { key: 'browse', label: `Жұмыс іздеу (${projects.length})` },
           { key: 'proposals', label: `Менің өтінімдерім (${myProposals.length})` },
+          { key: 'portfolio', label: `Портфолио (${portfolio.length})` },
           { key: 'profile', label: 'Профиль' },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
@@ -228,6 +233,97 @@ export default function FreelancerDashboard() {
                 <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.5 }}>{p.cover_letter}</p>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Portfolio tab */}
+      {tab === 'portfolio' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowPortfolioForm(o => !o)}>
+              <Plus size={13} /> Жаңа жұмыс қосу
+            </button>
+          </div>
+
+          {showPortfolioForm && (
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div className="form-title" style={{ marginBottom: 12 }}>Жаңа жұмыс</div>
+              <form onSubmit={async e => {
+                e.preventDefault();
+                setSubmitting(true);
+                await axios.post(`/api/freelancers/${profile.id}/portfolio`, portForm);
+                setPortForm({ title: '', description: '', tech: '', url: '' });
+                setShowPortfolioForm(false);
+                await load();
+                setSubmitting(false);
+              }}>
+                <div className="form-grid" style={{ gap: 12 }}>
+                  <div className="form-group full">
+                    <label className="form-label">Атауы *</label>
+                    <input className="form-input" required placeholder="E-commerce сайт"
+                      value={portForm.title} onChange={e => setPortForm({ ...portForm, title: e.target.value })} />
+                  </div>
+                  <div className="form-group full">
+                    <label className="form-label">Сипаттама</label>
+                    <textarea className="form-textarea" style={{ minHeight: 70 }} placeholder="Жұмыс туралы..."
+                      value={portForm.description} onChange={e => setPortForm({ ...portForm, description: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Технологиялар</label>
+                    <input className="form-input" placeholder="React, Node.js"
+                      value={portForm.tech} onChange={e => setPortForm({ ...portForm, tech: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Сілтеме</label>
+                    <input className="form-input" placeholder="https://..."
+                      value={portForm.url} onChange={e => setPortForm({ ...portForm, url: e.target.value })} />
+                  </div>
+                </div>
+                <div className="form-actions" style={{ marginTop: 12 }}>
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
+                    {submitting ? 'Сақталуда...' : 'Сақтау'}
+                  </button>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPortfolioForm(false)}>Болдырмау</button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {portfolio.length === 0 && !showPortfolioForm && (
+            <div className="empty"><div className="empty-icon">💼</div><div>Портфолио жоқ</div></div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+            {portfolio.map(item => {
+              const techs = item.tech ? item.tech.split(',').filter(Boolean) : [];
+              return (
+                <div key={item.id} style={{
+                  background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 16,
+                  display: 'flex', flexDirection: 'column', gap: 10, position: 'relative',
+                }}>
+                  <button onClick={async () => {
+                    await axios.delete(`/api/portfolio/${item.id}`);
+                    await load();
+                  }} style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex' }}>
+                    <Trash2 size={14} />
+                  </button>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', paddingRight: 20 }}>{item.title}</div>
+                  {item.description && <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5, margin: 0 }}>{item.description}</p>}
+                  {techs.length > 0 && (
+                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                      {techs.map((t, i) => <span key={i} className="skill-tag" style={{ fontSize: 10 }}>{t.trim()}</span>)}
+                    </div>
+                  )}
+                  {item.url && (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer"
+                      className="btn btn-secondary btn-sm" style={{ justifyContent: 'center', marginTop: 'auto' }}>
+                      <ExternalLink size={12} /> Қарау
+                    </a>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

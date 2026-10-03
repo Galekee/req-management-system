@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, PlusCircle, Users, Bell, Shield, LogOut, User, Palette, Layout, Rows, Columns } from 'lucide-react';
+import { LayoutDashboard, Briefcase, PlusCircle, Users, Bell, Shield, LogOut, User, Palette, MessageSquare, Menu, X } from 'lucide-react';
 import { AuthProvider, useAuth } from './AuthContext';
+import { ToastProvider } from './components/Toast';
 import axios from 'axios';
 
 import Dashboard from './pages/Dashboard';
@@ -15,6 +16,7 @@ import Login from './pages/Login';
 import AdminPanel from './pages/AdminPanel';
 import ClientDashboard from './pages/ClientDashboard';
 import FreelancerDashboard from './pages/FreelancerDashboard';
+import Messages from './pages/Messages';
 
 import './App.css';
 
@@ -49,15 +51,18 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppContent theme={theme} setTheme={setTheme} navMode={navMode} setNavMode={setNavMode} />
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <AppContent theme={theme} setTheme={setTheme} navMode={navMode} setNavMode={setNavMode} />
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }
 
 function AppContent({ theme, setTheme, navMode, setNavMode }) {
   const { user } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (!user) {
     return (
@@ -70,9 +75,13 @@ function AppContent({ theme, setTheme, navMode, setNavMode }) {
   return (
     <div className="layout">
       {navMode === 'vertical'
-        ? <Sidebar navMode={navMode} />
-        : <TopNav />
+        ? <Sidebar mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
+        : <TopNav mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
       }
+      {/* Mobile overlay */}
+      {navMode === 'vertical' && mobileMenuOpen && (
+        <div className="sidebar-overlay visible" onClick={() => setMobileMenuOpen(false)} />
+      )}
       <main className={`main ${navMode === 'topnav' ? 'topnav-mode' : ''}`}
         id="main-content">
         <Routes>
@@ -83,6 +92,7 @@ function AppContent({ theme, setTheme, navMode, setNavMode }) {
           <Route path="/freelancers" element={<Freelancers />} />
           <Route path="/freelancers/:id" element={<FreelancerDetail />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminPanel /></ProtectedRoute>} />
           <Route path="/client" element={<ProtectedRoute roles={['client','admin']}><ClientDashboard /></ProtectedRoute>} />
           <Route path="/freelancer" element={<ProtectedRoute roles={['freelancer']}><FreelancerDashboard /></ProtectedRoute>} />
@@ -150,18 +160,22 @@ function CtrlPanel({ theme, setTheme, navMode, setNavMode }) {
 }
 
 // ─── Vertical Sidebar ──────────────────────────────────────
-function Sidebar() {
+function Sidebar({ mobileOpen, setMobileOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
+  const [unreadMsgs, setUnreadMsgs] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    const fetch = () => axios.get('/api/stats').then(r => setUnread(r.data.unreadCount || 0)).catch(() => {});
+    const fetch = () => axios.get(`/api/stats?user_id=${user?.id}`).then(r => {
+      setUnread(r.data.unreadCount || 0);
+      setUnreadMsgs(r.data.unreadMessages || 0);
+    }).catch(() => {});
     fetch();
     const interval = setInterval(fetch, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user?.id]);
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -170,6 +184,7 @@ function Sidebar() {
     { to: '/projects', icon: <Briefcase size={18} />, label: 'Жобалар' },
     { to: '/freelancers', icon: <Users size={18} />, label: 'Фрилансерлер' },
     { to: '/notifications', icon: <Bell size={18} />, label: 'Хабарландырулар', badge: unread > 0 ? unread : null },
+    { to: '/messages', icon: <MessageSquare size={18} />, label: 'Хабарламалар', badge: unreadMsgs > 0 ? unreadMsgs : null },
   ];
 
   const adminNav = [
@@ -199,7 +214,7 @@ function Sidebar() {
 
   return (
     <aside
-      className={`sidebar ${collapsed ? 'collapsed' : ''}`}
+      className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}
       onMouseEnter={() => setCollapsed(false)}
       onMouseLeave={() => setCollapsed(true)}
     >
@@ -273,17 +288,17 @@ function Sidebar() {
 }
 
 // ─── Horizontal Top Nav ────────────────────────────────────
-function TopNav() {
+function TopNav({ mobileOpen, setMobileOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
-    const fetch = () => axios.get('/api/stats').then(r => setUnread(r.data.unreadCount || 0)).catch(() => {});
+    const fetch = () => axios.get(`/api/stats?user_id=${user?.id}`).then(r => setUnread(r.data.unreadCount || 0)).catch(() => {});
     fetch();
     const interval = setInterval(fetch, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user?.id]);
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -292,6 +307,7 @@ function TopNav() {
     { to: '/projects', icon: <Briefcase size={15} />, label: 'Жобалар' },
     { to: '/freelancers', icon: <Users size={15} />, label: 'Фрилансерлер' },
     { to: '/notifications', icon: <Bell size={15} />, label: `Хабарландырулар${unread > 0 ? ` (${unread})` : ''}` },
+    { to: '/messages', icon: <MessageSquare size={15} />, label: 'Хабарламалар' },
   ];
   const adminNav = [
     { to: '/admin', icon: <Shield size={15} />, label: 'Админ' },
@@ -309,12 +325,15 @@ function TopNav() {
 
   return (
     <nav className="topnav">
+      <button className="hamburger-btn" onClick={() => setMobileOpen(o => !o)}>
+        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
       <div className="topnav-brand">
         <div className="brand-logo" style={{ width: 30, height: 30, fontSize: 13, borderRadius: 8 }}><span>F</span></div>
         <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>Freelanzer</span>
       </div>
 
-      <div className="topnav-links">
+      <div className={`topnav-links ${mobileOpen ? 'mobile-open' : ''}`}>
         {[...commonNav, ...extraNav].map(item => (
           <NavLink key={item.to} to={item.to} end={item.to === '/'}
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>

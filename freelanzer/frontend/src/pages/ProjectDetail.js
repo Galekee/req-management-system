@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, DollarSign, User, Tag, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, CheckSquare, Square } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../AuthContext';
+import { Skeleton } from '../components/Skeleton';
 
 const CAT_LABELS = { web: 'Веб', mobile: 'Мобильді', design: 'Дизайн', bot: 'Бот', other: 'Басқа' };
 const STATUS_LABELS = { open: 'Ашық', in_progress: 'Орындалуда', completed: 'Аяқталған', cancelled: 'Бас тартылған' };
@@ -12,20 +14,26 @@ const REQ_STATUS_COLORS = { new: 'var(--blue)', in_progress: 'var(--orange)', ap
 export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [project, setProject] = useState(null);
   const [tab, setTab] = useState('proposals');
   const [form, setForm] = useState({ freelancer_name: '', cover_letter: '', bid_amount: '', delivery_days: '' });
   const [reqForm, setReqForm] = useState({ title: '', description: '', type: 'functional', priority: 'medium' });
+  const [milestoneTitle, setMilestoneTitle] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const load = () => axios.get(`/api/projects/${id}`).then(r => setProject(r.data));
+  const load = () => axios.get(`/api/projects/${id}`).then(r => {
+    setProject(r.data);
+    setLoading(false);
+  });
 
   useEffect(() => { load(); }, [id]);
 
   const submitProposal = async e => {
     e.preventDefault();
     setSubmitting(true);
-    await axios.post(`/api/projects/${id}/proposals`, form);
+    await axios.post(`/api/projects/${id}/proposals`, { ...form, freelancer_id: user?.id, freelancer_name: form.freelancer_name || user?.name });
     setForm({ freelancer_name: '', cover_letter: '', bid_amount: '', delivery_days: '' });
     await load();
     setSubmitting(false);
@@ -48,9 +56,55 @@ export default function ProjectDetail() {
     navigate('/projects');
   };
 
+  const toggleMilestone = async (m) => {
+    await axios.put(`/api/milestones/${m.id}`, { is_done: !m.is_done });
+    await load();
+  };
+
+  const addMilestone = async e => {
+    e.preventDefault();
+    if (!milestoneTitle.trim()) return;
+    await axios.post(`/api/projects/${id}/milestones`, { title: milestoneTitle });
+    setMilestoneTitle('');
+    await load();
+  };
+
+  const deleteMilestone = async (mid) => {
+    await axios.delete(`/api/milestones/${mid}`);
+    await load();
+  };
+
+  const canManage = user?.role === 'client' || user?.role === 'admin';
+
+  if (loading) {
+    return (
+      <div>
+        <Skeleton width={120} height={32} style={{ marginBottom: 24 }} />
+        <Skeleton width="60%" height={28} style={{ marginBottom: 16 }} />
+        <div className="detail-layout">
+          <div>
+            <div className="card" style={{ marginBottom: 16 }}>
+              <Skeleton width="100%" height={14} style={{ marginBottom: 8 }} />
+              <Skeleton width="80%" height={14} style={{ marginBottom: 8 }} />
+              <Skeleton width="60%" height={14} />
+            </div>
+          </div>
+          <div className="detail-sidebar">
+            <div className="card">
+              {[1,2,3,4].map(i => <Skeleton key={i} width="100%" height={40} style={{ marginBottom: 8 }} />)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!project) return <div className="loading">Жүктелуде...</div>;
 
   const skills = project.skills ? project.skills.split(',').filter(Boolean) : [];
+  const milestones = project.milestones || [];
+  const doneMilestones = milestones.filter(m => m.is_done).length;
+  const progress = project.progress ?? (milestones.length > 0 ? Math.round((doneMilestones / milestones.length) * 100) : 0);
 
   return (
     <div>
@@ -70,9 +124,11 @@ export default function ProjectDetail() {
           </div>
           <h1 className="page-title">{project.title}</h1>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-danger btn-sm" onClick={deleteProject}>Жою</button>
-        </div>
+        {canManage && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn btn-danger btn-sm" onClick={deleteProject}>Жою</button>
+          </div>
+        )}
       </div>
 
       <div className="detail-layout">
@@ -93,6 +149,85 @@ export default function ProjectDetail() {
             )}
           </div>
 
+          {/* Progress + Milestones */}
+          <div className="card">
+            <p className="card-title">Орындалу барысы</p>
+
+            {/* Progress bar */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Прогресс</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>{progress}%</span>
+              </div>
+              <div style={{ height: 8, background: 'var(--surface2)', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${progress}%`,
+                  background: 'linear-gradient(90deg, var(--accent), var(--purple))',
+                  borderRadius: 999,
+                  transition: 'width 0.5s ease',
+                }} />
+              </div>
+              {milestones.length > 0 && (
+                <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+                  {doneMilestones} / {milestones.length} кезең орындалды
+                </div>
+              )}
+            </div>
+
+            {/* Milestones list */}
+            {milestones.length === 0 && !canManage && (
+              <div style={{ fontSize: 13, color: 'var(--text-3)' }}>Кезеңдер жоқ</div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {milestones.map(m => (
+                <div key={m.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 12px',
+                  background: 'var(--surface2)', borderRadius: 8,
+                  border: '1px solid var(--border)',
+                  opacity: m.is_done ? 0.7 : 1,
+                }}>
+                  <button
+                    onClick={() => toggleMilestone(m)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: m.is_done ? 'var(--green)' : 'var(--text-3)', display: 'flex' }}
+                  >
+                    {m.is_done ? <CheckSquare size={18} /> : <Square size={18} />}
+                  </button>
+                  <span style={{
+                    flex: 1, fontSize: 13, color: 'var(--text)',
+                    textDecoration: m.is_done ? 'line-through' : 'none',
+                  }}>{m.title}</span>
+                  {canManage && (
+                    <button
+                      onClick={() => deleteMilestone(m.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--text-3)', display: 'flex', borderRadius: 4 }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Add milestone form */}
+            {canManage && (
+              <form onSubmit={addMilestone} style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                <input
+                  className="form-input"
+                  placeholder="Жаңа кезең атауы..."
+                  value={milestoneTitle}
+                  onChange={e => setMilestoneTitle(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button type="submit" className="btn btn-primary btn-sm">
+                  <Plus size={14} /> Қосу
+                </button>
+              </form>
+            )}
+          </div>
+
           {/* Tabs */}
           <div>
             <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 16 }}>
@@ -107,16 +242,12 @@ export default function ProjectDetail() {
                   onClick={() => setTab(t.key)}
                   style={{
                     background: 'none', border: 'none',
-                    padding: '8px 16px',
-                    fontSize: 13, fontWeight: 500,
+                    padding: '8px 16px', fontSize: 13, fontWeight: 500,
                     color: tab === t.key ? 'var(--accent)' : 'var(--text-3)',
                     borderBottom: tab === t.key ? '2px solid var(--accent)' : '2px solid transparent',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    marginBottom: -1,
+                    cursor: 'pointer', transition: 'all 0.15s', marginBottom: -1,
                   }}
-                >
-                  {t.label}
-                </button>
+                >{t.label}</button>
               ))}
             </div>
 
@@ -169,19 +300,23 @@ export default function ProjectDetail() {
                   <div className="form-grid">
                     <div className="form-group">
                       <label className="form-label">Атың *</label>
-                      <input className="form-input" placeholder="Бекарыс Балапан" required value={form.freelancer_name} onChange={e => setForm({...form, freelancer_name: e.target.value})} />
+                      <input className="form-input" placeholder="Бекарыс Балапан" required
+                        value={form.freelancer_name} onChange={e => setForm({ ...form, freelancer_name: e.target.value })} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Ұсынылған баға (₸) *</label>
-                      <input className="form-input" type="number" placeholder="100000" required value={form.bid_amount} onChange={e => setForm({...form, bid_amount: e.target.value})} />
+                      <input className="form-input" type="number" placeholder="100000" required
+                        value={form.bid_amount} onChange={e => setForm({ ...form, bid_amount: e.target.value })} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Орындау мерзімі (күн) *</label>
-                      <input className="form-input" type="number" placeholder="14" required value={form.delivery_days} onChange={e => setForm({...form, delivery_days: e.target.value})} />
+                      <input className="form-input" type="number" placeholder="14" required
+                        value={form.delivery_days} onChange={e => setForm({ ...form, delivery_days: e.target.value })} />
                     </div>
                     <div className="form-group full">
                       <label className="form-label">Хат *</label>
-                      <textarea className="form-textarea" placeholder="Неге сіздің жобаңызды мен жасауым керек..." required value={form.cover_letter} onChange={e => setForm({...form, cover_letter: e.target.value})} />
+                      <textarea className="form-textarea" placeholder="Неге сіздің жобаңызды мен жасауым керек..." required
+                        value={form.cover_letter} onChange={e => setForm({ ...form, cover_letter: e.target.value })} />
                     </div>
                   </div>
                   <div className="form-actions">
@@ -199,22 +334,24 @@ export default function ProjectDetail() {
                   <div className="form-grid">
                     <div className="form-group full">
                       <label className="form-label">Талап атауы *</label>
-                      <input className="form-input" placeholder="Пайдаланушы аутентификациясы" required value={reqForm.title} onChange={e => setReqForm({...reqForm, title: e.target.value})} />
+                      <input className="form-input" placeholder="Пайдаланушы аутентификациясы" required
+                        value={reqForm.title} onChange={e => setReqForm({ ...reqForm, title: e.target.value })} />
                     </div>
                     <div className="form-group full">
                       <label className="form-label">Сипаттама</label>
-                      <textarea className="form-textarea" placeholder="Толық сипаттама..." value={reqForm.description} onChange={e => setReqForm({...reqForm, description: e.target.value})} />
+                      <textarea className="form-textarea" placeholder="Толық сипаттама..."
+                        value={reqForm.description} onChange={e => setReqForm({ ...reqForm, description: e.target.value })} />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Түрі</label>
-                      <select className="form-select" value={reqForm.type} onChange={e => setReqForm({...reqForm, type: e.target.value})}>
+                      <select className="form-select" value={reqForm.type} onChange={e => setReqForm({ ...reqForm, type: e.target.value })}>
                         <option value="functional">Функционалды</option>
                         <option value="non_functional">Функционалды емес</option>
                       </select>
                     </div>
                     <div className="form-group">
                       <label className="form-label">Басымдық</label>
-                      <select className="form-select" value={reqForm.priority} onChange={e => setReqForm({...reqForm, priority: e.target.value})}>
+                      <select className="form-select" value={reqForm.priority} onChange={e => setReqForm({ ...reqForm, priority: e.target.value })}>
                         <option value="high">Жоғары</option>
                         <option value="medium">Орташа</option>
                         <option value="low">Төмен</option>
