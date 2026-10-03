@@ -19,12 +19,12 @@ const TYPE_COLORS = {
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Қазір';
-  if (mins < 60) return `${mins} мин бұрын`;
+  if (mins < 1) return 'Только что';
+  if (mins < 60) return `${mins} мин назад`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours} сағ бұрын`;
+  if (hours < 24) return `${hours} ч назад`;
   const days = Math.floor(hours / 24);
-  return `${days} күн бұрын`;
+  return `${days} дн назад`;
 }
 
 export default function Notifications() {
@@ -48,7 +48,7 @@ export default function Notifications() {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: 1 } : n));
   };
 
-  if (loading) return <div className="loading">Жүктелуде...</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
 
   const unread = notifications.filter(n => !n.is_read).length;
 
@@ -56,14 +56,14 @@ export default function Notifications() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Хабарландырулар</h1>
+          <h1 className="page-title">Уведомления</h1>
           <p className="page-sub">
-            {unread > 0 ? `${unread} оқылмаған хабарландыру` : 'Барлығы оқылды'}
+            {unread > 0 ? `${unread} непрочитанных уведомлений` : 'Всё прочитано'}
           </p>
         </div>
         {unread > 0 && (
           <button className="btn btn-secondary" onClick={markAll}>
-            <CheckCheck size={14} /> Барлығын оқылды деп белгілеу
+            <CheckCheck size={14} /> Отметить всё прочитанным
           </button>
         )}
       </div>
@@ -71,7 +71,7 @@ export default function Notifications() {
       {notifications.length === 0 && (
         <div className="empty">
           <div className="empty-icon">🔔</div>
-          <div>Хабарландыру жоқ</div>
+          <div>Нет уведомлений</div>
         </div>
       )}
 

@@ -81,8 +81,8 @@ export default function Freelancers() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Фрилансерлер</h1>
-          <p className="page-sub">{freelancers.length} маман тіркелген</p>
+          <h1 className="page-title">Фрилансеры</h1>
+          <p className="page-sub">{freelancers.length} специалистов зарегистрировано</p>
         </div>
       </div>
 
@@ -93,7 +93,7 @@ export default function Freelancers() {
           <input
             className="form-input"
             style={{ paddingLeft: 36, width: '100%' }}
-            placeholder="Аты, мамандық немесе технология бойынша іздеу..."
+            placeholder="Поиск по имени, специальности или технологии..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -103,7 +103,7 @@ export default function Freelancers() {
           onClick={() => setFiltersOpen(o => !o)}
           style={{ position: 'relative', flexShrink: 0 }}
         >
-          <SlidersHorizontal size={14} /> Сүзгі
+          <SlidersHorizontal size={14} /> Фильтр
           {activeFilterCount > 0 && (
             <span style={{
               position: 'absolute', top: -6, right: -6,
@@ -119,16 +119,16 @@ export default function Freelancers() {
       {filtersOpen && (
         <div className="card" style={{ marginBottom: 16, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Сүзгілер</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Фильтры</span>
             {activeFilterCount > 0 && (
               <button className="btn btn-ghost btn-sm" onClick={clearFilters}>
-                <X size={12} /> Тазалау
+                <X size={12} /> Очистить
               </button>
             )}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 12, alignItems: 'end' }}>
             <div>
-              <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 6, fontWeight: 500 }}>Мин. сағаттық баға (₸)</div>
+              <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 6, fontWeight: 500 }}>Мин. ставка в час (₸)</div>
               <input
                 className="form-input"
                 type="number"
@@ -138,7 +138,7 @@ export default function Freelancers() {
               />
             </div>
             <div>
-              <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 6, fontWeight: 500 }}>Макс. сағаттық баға (₸)</div>
+              <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 6, fontWeight: 500 }}>Макс. ставка в час (₸)</div>
               <input
                 className="form-input"
                 type="number"
@@ -164,7 +164,7 @@ export default function Freelancers() {
       {!loading && freelancers.length === 0 && (
         <div className="empty">
           <div className="empty-icon">👤</div>
-          <div>Фрилансер табылмады</div>
+          <div>Фрилансеры не найдены</div>
         </div>
       )}
 
@@ -191,7 +191,7 @@ export default function Freelancers() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <StarRating rating={f.avgRating} />
                         <span style={{ fontSize: 12, color: 'var(--text-3)' }}>
-                          {f.avgRating > 0 ? f.avgRating : '—'} ({f.reviews?.length || 0} пікір)
+                          {f.avgRating > 0 ? f.avgRating : '—'} ({f.reviews?.length || 0} отзывов)
                         </span>
                       </div>
                     </div>
@@ -217,10 +217,10 @@ export default function Freelancers() {
                     </div>
                     <div style={{ display: 'flex', gap: 16 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--text-2)' }}>
-                        <Briefcase size={12} /> {f.jobs_done} жоба
+                        <Briefcase size={12} /> {f.jobs_done} проектов
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--green)', fontWeight: 600 }}>
-                        <TrendingUp size={12} /> {Number(f.hourly_rate).toLocaleString()} ₸/сағ
+                        <TrendingUp size={12} /> {Number(f.hourly_rate).toLocaleString()} ₸/час
                       </div>
                     </div>
                   </div>

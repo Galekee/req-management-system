@@ -121,7 +121,7 @@ function CtrlPanel({ theme, setTheme, navMode, setNavMode }) {
     <div className="ctrl-panel" ref={ref}>
       {open && (
         <div className="ctrl-popup">
-          <div className="ctrl-section-label">Тема / Theme</div>
+          <div className="ctrl-section-label">Тема</div>
           <div className="theme-swatches">
             {THEMES.map(t => (
               <button
@@ -141,18 +141,18 @@ function CtrlPanel({ theme, setTheme, navMode, setNavMode }) {
               className={`nav-mode-btn ${navMode === 'vertical' ? 'active' : ''}`}
               onClick={() => setNavMode('vertical')}
             >
-              ⬛ Sidebar
+              ⬛ Боковая панель
             </button>
             <button
               className={`nav-mode-btn ${navMode === 'topnav' ? 'active' : ''}`}
               onClick={() => setNavMode('topnav')}
             >
-              ▬ Top
+              ▬ Верхняя
             </button>
           </div>
         </div>
       )}
-      <button className="ctrl-toggle" onClick={() => setOpen(o => !o)} title="Параметрлер">
+      <button className="ctrl-toggle" onClick={() => setOpen(o => !o)} title="Настройки">
         <Palette size={16} />
       </button>
     </div>
@@ -181,23 +181,23 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
   const commonNav = [
     { to: '/', icon: <LayoutDashboard size={18} />, label: 'Дашборд' },
-    { to: '/projects', icon: <Briefcase size={18} />, label: 'Жобалар' },
-    { to: '/freelancers', icon: <Users size={18} />, label: 'Фрилансерлер' },
-    { to: '/notifications', icon: <Bell size={18} />, label: 'Хабарландырулар', badge: unread > 0 ? unread : null },
-    { to: '/messages', icon: <MessageSquare size={18} />, label: 'Хабарламалар', badge: unreadMsgs > 0 ? unreadMsgs : null },
+    { to: '/projects', icon: <Briefcase size={18} />, label: 'Проекты' },
+    { to: '/freelancers', icon: <Users size={18} />, label: 'Фрилансеры' },
+    { to: '/notifications', icon: <Bell size={18} />, label: 'Уведомления', badge: unread > 0 ? unread : null },
+    { to: '/messages', icon: <MessageSquare size={18} />, label: 'Сообщения', badge: unreadMsgs > 0 ? unreadMsgs : null },
   ];
 
   const adminNav = [
-    { to: '/admin', icon: <Shield size={18} />, label: 'Админ панелі' },
-    { to: '/client', icon: <User size={18} />, label: 'Клиент бөлімі' },
-    { to: '/projects/new', icon: <PlusCircle size={18} />, label: 'Жоба жариялау' },
+    { to: '/admin', icon: <Shield size={18} />, label: 'Панель администратора' },
+    { to: '/client', icon: <User size={18} />, label: 'Раздел клиента' },
+    { to: '/projects/new', icon: <PlusCircle size={18} />, label: 'Опубликовать проект' },
   ];
   const clientNav = [
-    { to: '/client', icon: <User size={18} />, label: 'Менің жобаларым' },
-    { to: '/projects/new', icon: <PlusCircle size={18} />, label: 'Жоба жариялау' },
+    { to: '/client', icon: <User size={18} />, label: 'Мои проекты' },
+    { to: '/projects/new', icon: <PlusCircle size={18} />, label: 'Опубликовать проект' },
   ];
   const freelancerNav = [
-    { to: '/freelancer', icon: <User size={18} />, label: 'Менің кабинетім' },
+    { to: '/freelancer', icon: <User size={18} />, label: 'Мой кабинет' },
   ];
 
   const extraNav = user.role === 'admin' ? adminNav : user.role === 'client' ? clientNav : user.role === 'freelancer' ? freelancerNav : [];
@@ -261,7 +261,7 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
         {extraNav.length > 0 && (
           <>
-            {!collapsed && <div className="nav-section-label" style={{ marginTop: 12 }}>Менің бөлімім</div>}
+            {!collapsed && <div className="nav-section-label" style={{ marginTop: 12 }}>Мой раздел</div>}
             {collapsed && <div style={{ height: 12 }} />}
             {extraNav.map(item => (
               <NavLink key={item.to} to={item.to}
@@ -289,9 +289,9 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
             </div>
           )}
         </div>
-        <button onClick={handleLogout} className="logout-btn" title={collapsed ? 'Шығу' : undefined}>
+        <button onClick={handleLogout} className="logout-btn" title={collapsed ? 'Выйти' : undefined}>
           <LogOut size={13} />
-          {!collapsed && <span className="logout-label">Шығу</span>}
+          {!collapsed && <span className="logout-label">Выйти</span>}
         </button>
       </div>
     </aside>
@@ -315,19 +315,19 @@ function TopNav({ mobileOpen, setMobileOpen }) {
 
   const commonNav = [
     { to: '/', icon: <LayoutDashboard size={15} />, label: 'Дашборд' },
-    { to: '/projects', icon: <Briefcase size={15} />, label: 'Жобалар' },
-    { to: '/freelancers', icon: <Users size={15} />, label: 'Фрилансерлер' },
-    { to: '/notifications', icon: <Bell size={15} />, label: `Хабарландырулар${unread > 0 ? ` (${unread})` : ''}` },
-    { to: '/messages', icon: <MessageSquare size={15} />, label: 'Хабарламалар' },
+    { to: '/projects', icon: <Briefcase size={15} />, label: 'Проекты' },
+    { to: '/freelancers', icon: <Users size={15} />, label: 'Фрилансеры' },
+    { to: '/notifications', icon: <Bell size={15} />, label: `Уведомления${unread > 0 ? ` (${unread})` : ''}` },
+    { to: '/messages', icon: <MessageSquare size={15} />, label: 'Сообщения' },
   ];
   const adminNav = [
     { to: '/admin', icon: <Shield size={15} />, label: 'Админ' },
     { to: '/client', icon: <User size={15} />, label: 'Клиент' },
-    { to: '/projects/new', icon: <PlusCircle size={15} />, label: 'Жаңа жоба' },
+    { to: '/projects/new', icon: <PlusCircle size={15} />, label: 'Новый проект' },
   ];
   const clientNav = [
-    { to: '/client', icon: <User size={15} />, label: 'Менің жобаларым' },
-    { to: '/projects/new', icon: <PlusCircle size={15} />, label: 'Жаңа жоба' },
+    { to: '/client', icon: <User size={15} />, label: 'Мои проекты' },
+    { to: '/projects/new', icon: <PlusCircle size={15} />, label: 'Новый проект' },
   ];
   const freelancerNav = [{ to: '/freelancer', icon: <User size={15} />, label: 'Кабинет' }];
 
@@ -375,7 +375,7 @@ function TopNav({ mobileOpen, setMobileOpen }) {
           <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-2)' }}>{user.name}</span>
         </div>
         <button onClick={handleLogout} className="btn btn-ghost btn-sm" style={{ padding: '5px 10px', opacity: 0.7 }}>
-          <LogOut size={13} /> Шығу
+          <LogOut size={13} /> Выйти
         </button>
       </div>
     </nav>

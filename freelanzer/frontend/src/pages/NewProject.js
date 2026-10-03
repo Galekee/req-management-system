@@ -22,14 +22,14 @@ export default function NewProject() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
         <Link to="/projects" className="btn btn-ghost btn-sm">
-          <ArrowLeft size={14} /> Артқа
+          <ArrowLeft size={14} /> Назад
         </Link>
       </div>
 
       <div className="page-header">
         <div>
-          <h1 className="page-title">Жоба жариялау</h1>
-          <p className="page-sub">Жаңа тапсырыс — фрилансерлер өтінім береді</p>
+          <h1 className="page-title">Опубликовать проект</h1>
+          <p className="page-sub">Новый заказ — фрилансеры подадут предложения</p>
         </div>
       </div>
 
@@ -37,29 +37,29 @@ export default function NewProject() {
         <form onSubmit={submit}>
           <div className="form-grid">
             <div className="form-group full">
-              <label className="form-label">Жоба атауы *</label>
-              <input className="form-input" placeholder="Интернет-дүкен сайты" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
+              <label className="form-label">Название проекта *</label>
+              <input className="form-input" placeholder="Интернет-магазин" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
             </div>
 
             <div className="form-group full">
-              <label className="form-label">Сипаттама *</label>
-              <textarea className="form-textarea" style={{ minHeight: 120 }} placeholder="Жоба туралы толық ақпарат, не жасау керек, қандай функциялар болу тиіс..." required value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
+              <label className="form-label">Описание *</label>
+              <textarea className="form-textarea" style={{ minHeight: 120 }} placeholder="Подробная информация о проекте, что нужно сделать, какие функции должны быть..." required value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Категория</label>
               <select className="form-select" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
                 <option value="web">Веб-сайт</option>
-                <option value="mobile">Мобильді қосымша</option>
+                <option value="mobile">Мобильное приложение</option>
                 <option value="design">Дизайн</option>
                 <option value="bot">Бот</option>
-                <option value="other">Басқа</option>
+                <option value="other">Другое</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Клиент аты *</label>
-              <input className="form-input" placeholder="Асқар Беков" required value={form.client_name} onChange={e => setForm({...form, client_name: e.target.value})} />
+              <label className="form-label">Имя заказчика *</label>
+              <input className="form-input" placeholder="Иван Иванов" required value={form.client_name} onChange={e => setForm({...form, client_name: e.target.value})} />
             </div>
 
             <div className="form-group">
@@ -73,16 +73,16 @@ export default function NewProject() {
             </div>
 
             <div className="form-group full">
-              <label className="form-label">Технологиялар (үтірмен бөл)</label>
+              <label className="form-label">Технологии (через запятую)</label>
               <input className="form-input" placeholder="React, Node.js, PostgreSQL" value={form.skills} onChange={e => setForm({...form, skills: e.target.value})} />
             </div>
           </div>
 
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Жариялануда...' : '🚀 Жариялау'}
+              {submitting ? 'Публикация...' : '🚀 Опубликовать'}
             </button>
-            <Link to="/projects" className="btn btn-secondary">Болдырмау</Link>
+            <Link to="/projects" className="btn btn-secondary">Отмена</Link>
           </div>
         </form>
       </div>

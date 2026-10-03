@@ -4,8 +4,8 @@ import { PlusCircle, CheckCircle, XCircle, Clock, Briefcase } from 'lucide-react
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-const STATUS_LABELS = { open: 'Ашық', in_progress: 'Орындалуда', completed: 'Аяқталған', cancelled: 'Бас тартылған' };
-const PROPOSAL_STATUS = { pending: 'Қарауда', accepted: 'Қабылданды', rejected: 'Қабылданбады' };
+const STATUS_LABELS = { open: 'Открытый', in_progress: 'В работе', completed: 'Завершён', cancelled: 'Отменён' };
+const PROPOSAL_STATUS = { pending: 'На рассмотрении', accepted: 'Принято', rejected: 'Отклонено' };
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -38,17 +38,17 @@ export default function ClientDashboard() {
     load();
   };
 
-  if (loading) return <div className="loading">Жүктелуде...</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
 
   return (
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Клиент кабинеті</h1>
-          <p className="page-sub">Сәлем, {user.name}! Жобаларыңызды басқарыңыз</p>
+          <h1 className="page-title">Кабинет клиента</h1>
+          <p className="page-sub">Привет, {user.name}! Управляйте своими проектами</p>
         </div>
         <Link to="/projects/new" className="btn btn-primary">
-          <PlusCircle size={14} /> Жаңа жоба
+          <PlusCircle size={14} /> Новый проект
         </Link>
       </div>
 
@@ -56,14 +56,14 @@ export default function ClientDashboard() {
         {/* Projects list */}
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>
-            Менің жобаларым ({projects.length})
+            Мои проекты ({projects.length})
           </p>
 
           {projects.length === 0 && (
             <div className="empty">
               <div className="empty-icon">📁</div>
-              <div>Жоба жоқ</div>
-              <Link to="/projects/new" className="btn btn-primary btn-sm" style={{ marginTop: 12 }}>Жоба жариялау</Link>
+              <div>Нет проектов</div>
+              <Link to="/projects/new" className="btn btn-primary btn-sm" style={{ marginTop: 12 }}>Опубликовать проект</Link>
             </div>
           )}
 
@@ -94,9 +94,9 @@ export default function ClientDashboard() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <p style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Өтінімдер ({selected.proposals?.length || 0})
+                Предложения ({selected.proposals?.length || 0})
               </p>
-              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', fontSize: 12 }}>✕ Жабу</button>
+              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', fontSize: 12 }}>✕ Закрыть</button>
             </div>
 
             <div className="card" style={{ marginBottom: 12 }}>
@@ -105,7 +105,7 @@ export default function ClientDashboard() {
             </div>
 
             {selected.proposals?.length === 0 && (
-              <div className="empty"><div className="empty-icon">📩</div><div>Әлі өтінім жоқ</div></div>
+              <div className="empty"><div className="empty-icon">📩</div><div>Предложений пока нет</div></div>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -116,7 +116,7 @@ export default function ClientDashboard() {
                       <div className="client-avatar">{p.freelancer_name[0]}</div>
                       <div>
                         <div className="proposal-name">{p.freelancer_name}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{p.delivery_days} күн · {Number(p.bid_amount).toLocaleString()} ₸</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{p.delivery_days} дн. · {Number(p.bid_amount).toLocaleString()} ₸</div>
                       </div>
                     </div>
                     <span className={`badge badge-${p.status}`} style={{ fontSize: 10 }}>
@@ -128,10 +128,10 @@ export default function ClientDashboard() {
                   {p.status === 'pending' && (
                     <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                       <button className="btn btn-primary btn-sm" style={{ gap: 4 }} onClick={() => updateProposal(p.id, 'accepted')}>
-                        <CheckCircle size={13} /> Қабылдау
+                        <CheckCircle size={13} /> Принять
                       </button>
                       <button className="btn btn-danger btn-sm" style={{ gap: 4 }} onClick={() => updateProposal(p.id, 'rejected')}>
-                        <XCircle size={13} /> Қабылдамау
+                        <XCircle size={13} /> Отклонить
                       </button>
                     </div>
                   )}

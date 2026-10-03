@@ -9,9 +9,9 @@ import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import { Skeleton, SkeletonCard } from '../components/Skeleton';
 
-const CAT_LABELS = { web: 'Веб', mobile: 'Мобильді', design: 'Дизайн', bot: 'Бот', other: 'Басқа' };
+const CAT_LABELS = { web: 'Веб', mobile: 'Мобильное', design: 'Дизайн', bot: 'Бот', other: 'Другое' };
 const CAT_COLORS = { web: '#3b82f6', mobile: '#22c55e', design: '#a855f7', bot: '#f97316', other: '#eab308' };
-const STATUS_LABELS = { open: 'Ашық', in_progress: 'Орындалуда', completed: 'Аяқталған', cancelled: 'Бас тартылған' };
+const STATUS_LABELS = { open: 'Открытый', in_progress: 'В работе', completed: 'Завершён', cancelled: 'Отменён' };
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -52,7 +52,7 @@ export default function Dashboard() {
     );
   }
 
-  if (!stats) return <div className="empty">Деректер жоқ</div>;
+  if (!stats) return <div className="empty">Нет данных</div>;
 
   const catData = (stats.byCategory || []).map(c => ({
     name: CAT_LABELS[c.category] || c.category,
@@ -71,10 +71,10 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Дашборд</h1>
-          <p className="page-sub">Freelanzer · Жалпы жай-күй</p>
+          <p className="page-sub">Freelanzer · Общая сводка</p>
         </div>
         {!isFreelancer && (
-          <Link to="/projects/new" className="btn btn-primary">+ Жоба жариялау</Link>
+          <Link to="/projects/new" className="btn btn-primary">+ Опубликовать проект</Link>
         )}
       </div>
 
@@ -85,7 +85,7 @@ export default function Dashboard() {
             <Briefcase size={18} color="#6366f1" />
           </div>
           <div className="stat-value">{stats.totalProjects ?? 0}</div>
-          <div className="stat-label">Барлық жобалар</div>
+          <div className="stat-label">Всего проектов</div>
           <div className="stat-change up">↑ Платформа</div>
         </div>
         <div className="stat-card">
@@ -93,22 +93,22 @@ export default function Dashboard() {
             <TrendingUp size={18} color="#22c55e" />
           </div>
           <div className="stat-value" style={{ color: 'var(--green)' }}>{stats.activeProjects ?? stats.openProjects ?? 0}</div>
-          <div className="stat-label">Белсенді жобалар</div>
-          <div className="stat-change up">↑ Орындалуда</div>
+          <div className="stat-label">Активных проектов</div>
+          <div className="stat-change up">↑ В работе</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon" style={{ background: 'rgba(239,68,68,0.12)' }}>
             <Bell size={18} color="#ef4444" />
           </div>
           <div className="stat-value" style={{ color: 'var(--red)' }}>{stats.unreadCount ?? 0}</div>
-          <div className="stat-label">Оқылмаған хабарландырулар</div>
+          <div className="stat-label">Непрочитанных уведомлений</div>
         </div>
         <div className="stat-card">
           <div className="stat-icon" style={{ background: 'rgba(59,130,246,0.12)' }}>
             <MessageSquare size={18} color="#3b82f6" />
           </div>
           <div className="stat-value" style={{ color: 'var(--blue)' }}>{stats.unreadMessages ?? 0}</div>
-          <div className="stat-label">Оқылмаған хабарламалар</div>
+          <div className="stat-label">Непрочитанных сообщений</div>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export default function Dashboard() {
       <div className="charts-grid">
         <div className="card" style={{ gridColumn: chartData.length ? '1 / 2' : '1 / -1' }}>
           <p className="card-title">
-            {isFreelancer ? 'Ай сайынғы табыс (₸)' : 'Ай сайынғы жаңа жобалар'}
+            {isFreelancer ? 'Ежемесячный доход (₸)' : 'Новые проекты по месяцам'}
           </p>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
@@ -143,13 +143,13 @@ export default function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="empty" style={{ padding: 40 }}>Деректер жоқ</div>
+            <div className="empty" style={{ padding: 40 }}>Нет данных</div>
           )}
         </div>
 
         {catData.length > 0 && (
           <div className="card">
-            <p className="card-title">Категория бойынша</p>
+            <p className="card-title">По категориям</p>
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie data={catData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" paddingAngle={3}>
@@ -173,7 +173,7 @@ export default function Dashboard() {
       {/* Recent projects */}
       {recentProjects.length > 0 && (
         <div className="card">
-          <p className="card-title">Соңғы жобалар</p>
+          <p className="card-title">Последние проекты</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {recentProjects.map((p, i) => (
               <Link key={p.id} to={`/projects/${p.id}`} style={{ textDecoration: 'none' }}>
@@ -209,7 +209,7 @@ export default function Dashboard() {
       {/* Top freelancers */}
       {stats.topFreelancers?.length > 0 && (
         <div className="card" style={{ marginTop: 14 }}>
-          <p className="card-title">Белсенді фрилансерлер</p>
+          <p className="card-title">Активные фрилансеры</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {stats.topFreelancers.map((f, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: i < stats.topFreelancers.length - 1 ? '1px solid var(--border)' : 'none' }}>
@@ -219,7 +219,7 @@ export default function Dashboard() {
                   </div>
                   <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{f.freelancer_name}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>{f.count} өтінім</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>{f.count} заявок</span>
               </div>
             ))}
           </div>

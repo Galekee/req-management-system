@@ -3,9 +3,9 @@ import { Search, MapPin, Send, Edit3, Check, Plus, Trash2, ExternalLink } from '
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
-const STATUS_LABELS = { open: 'Ашық', in_progress: 'Орындалуда', completed: 'Аяқталған' };
-const CAT_LABELS = { web: 'Веб', mobile: 'Мобильді', design: 'Дизайн', bot: 'Бот', other: 'Басқа' };
-const PROPOSAL_STATUS_LABELS = { pending: 'Қарауда', accepted: '✅ Қабылданды', rejected: '❌ Қабылданбады' };
+const STATUS_LABELS = { open: 'Открытый', in_progress: 'В работе', completed: 'Завершён' };
+const CAT_LABELS = { web: 'Веб', mobile: 'Мобильное', design: 'Дизайн', bot: 'Бот', other: 'Другое' };
+const PROPOSAL_STATUS_LABELS = { pending: 'На рассмотрении', accepted: '✅ Принято', rejected: '❌ Отклонено' };
 
 export default function FreelancerDashboard() {
   const { user } = useAuth();
@@ -67,7 +67,7 @@ export default function FreelancerDashboard() {
     setSubmitting(false);
   };
 
-  if (loading) return <div className="loading">Жүктелуде...</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
 
   // Blocked freelancer
   if (!profile?.is_approved) {
@@ -75,9 +75,9 @@ export default function FreelancerDashboard() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ textAlign: 'center', maxWidth: 400 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
-          <h2 style={{ color: 'var(--text-1)', marginBottom: 8 }}>Тіркелуіңіз тексерілуде</h2>
+          <h2 style={{ color: 'var(--text-1)', marginBottom: 8 }}>Ваша регистрация проверяется</h2>
           <p style={{ color: 'var(--text-3)', lineHeight: 1.6 }}>
-            Админ сіздің профиліңізді тексеруде. Бекітілгеннен кейін жұмыс іздей аласыз.
+            Администратор проверяет ваш профиль. После одобрения вы сможете искать работу.
           </p>
         </div>
       </div>
@@ -97,16 +97,16 @@ export default function FreelancerDashboard() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Фрилансер кабинеті</h1>
-          <p className="page-sub">Сәлем, {user.name}! Жұмыс іздеңіз</p>
+          <h1 className="page-title">Кабинет фрилансера</h1>
+          <p className="page-sub">Привет, {user.name}! Найдите работу</p>
         </div>
       </div>
 
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', marginBottom: 20 }}>
         {[
-          { key: 'browse', label: `Жұмыс іздеу (${projects.length})` },
-          { key: 'proposals', label: `Менің өтінімдерім (${myProposals.length})` },
+          { key: 'browse', label: `Поиск работы (${projects.length})` },
+          { key: 'proposals', label: `Мои предложения (${myProposals.length})` },
           { key: 'portfolio', label: `Портфолио (${portfolio.length})` },
           { key: 'profile', label: 'Профиль' },
         ].map(t => (
@@ -124,36 +124,36 @@ export default function FreelancerDashboard() {
         <div>
           <div style={{ marginBottom: 16, position: 'relative' }}>
             <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
-            <input className="form-input" style={{ paddingLeft: 36 }} placeholder="Жоба атауы, технология бойынша іздеу..."
+            <input className="form-input" style={{ paddingLeft: 36 }} placeholder="Поиск по названию проекта, технологии..."
               value={search} onChange={e => setSearch(e.target.value)} />
           </div>
 
           {applyForm.projectId && (
             <div className="form-card" style={{ marginBottom: 16 }}>
-              <div className="form-title">Өтінім жіберу</div>
+              <div className="form-title">Отправить предложение</div>
               <form onSubmit={submitProposal}>
                 <div className="form-grid">
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Ұсынылған баға (₸) *</label>
+                    <label className="form-label">Предлагаемая цена (₸) *</label>
                     <input className="form-input" type="number" placeholder="100000" required
                       value={applyForm.bid_amount} onChange={e => setApplyForm({ ...applyForm, bid_amount: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Орындау мерзімі (күн) *</label>
+                    <label className="form-label">Срок выполнения (дней) *</label>
                     <input className="form-input" type="number" placeholder="14" required
                       value={applyForm.delivery_days} onChange={e => setApplyForm({ ...applyForm, delivery_days: e.target.value })} />
                   </div>
                   <div className="form-group full" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Сүйемелдеу хаты *</label>
-                    <textarea className="form-textarea" placeholder="Бұл жобаны неге орындай аласыз..." required
+                    <label className="form-label">Сопроводительное письмо *</label>
+                    <textarea className="form-textarea" placeholder="Почему вы можете выполнить этот проект..." required
                       value={applyForm.cover_letter} onChange={e => setApplyForm({ ...applyForm, cover_letter: e.target.value })} />
                   </div>
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary" disabled={submitting}>
-                    <Send size={13} /> {submitting ? 'Жіберілуде...' : 'Өтінім жіберу'}
+                    <Send size={13} /> {submitting ? 'Отправка...' : 'Отправить предложение'}
                   </button>
-                  <button type="button" className="btn btn-secondary" onClick={() => setApplyForm({ projectId: null, cover_letter: '', bid_amount: '', delivery_days: '' })}>Болдырмау</button>
+                  <button type="button" className="btn btn-secondary" onClick={() => setApplyForm({ projectId: null, cover_letter: '', bid_amount: '', delivery_days: '' })}>Отмена</button>
                 </div>
               </form>
             </div>
@@ -193,11 +193,11 @@ export default function FreelancerDashboard() {
                     <span style={{ fontSize: 12, color: 'var(--text-3)' }}>👤 {p.client_name}</span>
                     {applied ? (
                       <span style={{ fontSize: 12, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Check size={13} /> Өтінім жіберілді
+                        <Check size={13} /> Предложение отправлено
                       </span>
                     ) : (
                       <button className="btn btn-primary btn-sm" onClick={() => setApplyForm({ projectId: p.id, cover_letter: '', bid_amount: '', delivery_days: '' })}>
-                        <Send size={12} /> Өтінім беру
+                        <Send size={12} /> Подать предложение
                       </button>
                     )}
                   </div>
@@ -212,7 +212,7 @@ export default function FreelancerDashboard() {
       {tab === 'proposals' && (
         <div>
           {myProposals.length === 0 && (
-            <div className="empty"><div className="empty-icon">📩</div><div>Өтінім жоқ</div></div>
+            <div className="empty"><div className="empty-icon">📩</div><div>Нет предложений</div></div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {myProposals.map(p => (
@@ -221,7 +221,7 @@ export default function FreelancerDashboard() {
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-1)' }}>{p.project_title}</div>
                     <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
-                      {Number(p.bid_amount).toLocaleString()} ₸ · {p.delivery_days} күн
+                      {Number(p.bid_amount).toLocaleString()} ₸ · {p.delivery_days} дн.
                     </div>
                   </div>
                   <span style={{
@@ -242,13 +242,13 @@ export default function FreelancerDashboard() {
         <div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
             <button className="btn btn-primary btn-sm" onClick={() => setShowPortfolioForm(o => !o)}>
-              <Plus size={13} /> Жаңа жұмыс қосу
+              <Plus size={13} /> Добавить работу
             </button>
           </div>
 
           {showPortfolioForm && (
             <div className="card" style={{ marginBottom: 16 }}>
-              <div className="form-title" style={{ marginBottom: 12 }}>Жаңа жұмыс</div>
+              <div className="form-title" style={{ marginBottom: 12 }}>Новая работа</div>
               <form onSubmit={async e => {
                 e.preventDefault();
                 setSubmitting(true);
@@ -260,38 +260,38 @@ export default function FreelancerDashboard() {
               }}>
                 <div className="form-grid" style={{ gap: 12 }}>
                   <div className="form-group full">
-                    <label className="form-label">Атауы *</label>
+                    <label className="form-label">Название *</label>
                     <input className="form-input" required placeholder="E-commerce сайт"
                       value={portForm.title} onChange={e => setPortForm({ ...portForm, title: e.target.value })} />
                   </div>
                   <div className="form-group full">
-                    <label className="form-label">Сипаттама</label>
-                    <textarea className="form-textarea" style={{ minHeight: 70 }} placeholder="Жұмыс туралы..."
+                    <label className="form-label">Описание</label>
+                    <textarea className="form-textarea" style={{ minHeight: 70 }} placeholder="О работе..."
                       value={portForm.description} onChange={e => setPortForm({ ...portForm, description: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Технологиялар</label>
+                    <label className="form-label">Технологии</label>
                     <input className="form-input" placeholder="React, Node.js"
                       value={portForm.tech} onChange={e => setPortForm({ ...portForm, tech: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Сілтеме</label>
+                    <label className="form-label">Ссылка</label>
                     <input className="form-input" placeholder="https://..."
                       value={portForm.url} onChange={e => setPortForm({ ...portForm, url: e.target.value })} />
                   </div>
                 </div>
                 <div className="form-actions" style={{ marginTop: 12 }}>
                   <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
-                    {submitting ? 'Сақталуда...' : 'Сақтау'}
+                    {submitting ? 'Сохранение...' : 'Сохранить'}
                   </button>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPortfolioForm(false)}>Болдырмау</button>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPortfolioForm(false)}>Отмена</button>
                 </div>
               </form>
             </div>
           )}
 
           {portfolio.length === 0 && !showPortfolioForm && (
-            <div className="empty"><div className="empty-icon">💼</div><div>Портфолио жоқ</div></div>
+            <div className="empty"><div className="empty-icon">💼</div><div>Нет портфолио</div></div>
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
@@ -318,7 +318,7 @@ export default function FreelancerDashboard() {
                   {item.url && (
                     <a href={item.url} target="_blank" rel="noopener noreferrer"
                       className="btn btn-secondary btn-sm" style={{ justifyContent: 'center', marginTop: 'auto' }}>
-                      <ExternalLink size={12} /> Қарау
+                      <ExternalLink size={12} /> Посмотреть
                     </a>
                   )}
                 </div>
@@ -333,9 +333,9 @@ export default function FreelancerDashboard() {
         <div>
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <p className="card-title" style={{ marginBottom: 0 }}>Менің профилім</p>
+              <p className="card-title" style={{ marginBottom: 0 }}>Мой профиль</p>
               <button className="btn btn-secondary btn-sm" onClick={() => setEditProfile(!editProfile)}>
-                <Edit3 size={13} /> {editProfile ? 'Болдырмау' : 'Өзгерту'}
+                <Edit3 size={13} /> {editProfile ? 'Отмена' : 'Редактировать'}
               </button>
             </div>
 
@@ -353,7 +353,7 @@ export default function FreelancerDashboard() {
                     <div style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 4 }}>{profile.title}</div>
                     <div style={{ fontSize: 12, color: 'var(--text-3)', display: 'flex', gap: 12 }}>
                       <span><MapPin size={11} style={{ display: 'inline' }} /> {profile.location}</span>
-                      <span>💰 {Number(profile.hourly_rate).toLocaleString()} ₸/сағ</span>
+                      <span>💰 {Number(profile.hourly_rate).toLocaleString()} ₸/час</span>
                     </div>
                   </div>
                 </div>
@@ -366,11 +366,11 @@ export default function FreelancerDashboard() {
                 <div style={{ display: 'flex', gap: 20, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--accent)' }}>{profile.jobs_done}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Аяқталған жоба</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Выполненных проектов</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--green)' }}>{Number(profile.total_earned).toLocaleString()}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Жалпы табыс ₸</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Общий доход ₸</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 20, fontWeight: 800, color: '#f59e0b' }}>{profile.avgRating || '—'}</div>
@@ -382,33 +382,33 @@ export default function FreelancerDashboard() {
               <form onSubmit={saveProfile}>
                 <div className="form-grid">
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Аты-жөні</label>
+                    <label className="form-label">Имя</label>
                     <input className="form-input" value={profileForm.name} onChange={e => setProfileForm({ ...profileForm, name: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Мамандық</label>
+                    <label className="form-label">Специальность</label>
                     <input className="form-input" value={profileForm.title} onChange={e => setProfileForm({ ...profileForm, title: e.target.value })} />
                   </div>
                   <div className="form-group full" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Өзіңіз туралы</label>
+                    <label className="form-label">О себе</label>
                     <textarea className="form-textarea" value={profileForm.bio} onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })} />
                   </div>
                   <div className="form-group full" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Технологиялар (үтірмен)</label>
+                    <label className="form-label">Технологии (через запятую)</label>
                     <input className="form-input" value={profileForm.skills} onChange={e => setProfileForm({ ...profileForm, skills: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Сағаттық баға (₸)</label>
+                    <label className="form-label">Ставка в час (₸)</label>
                     <input className="form-input" type="number" value={profileForm.hourly_rate} onChange={e => setProfileForm({ ...profileForm, hourly_rate: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Қала</label>
+                    <label className="form-label">Город</label>
                     <input className="form-input" value={profileForm.location} onChange={e => setProfileForm({ ...profileForm, location: e.target.value })} />
                   </div>
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary" disabled={submitting}>
-                    {submitting ? 'Сақталуда...' : 'Сақтау'}
+                    {submitting ? 'Сохранение...' : 'Сохранить'}
                   </button>
                 </div>
               </form>

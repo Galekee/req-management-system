@@ -26,7 +26,7 @@ export default function Login() {
       login(res.data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Қате орын алды');
+      setError(err.response?.data?.error || 'Произошла ошибка');
     }
     setLoading(false);
   };
@@ -40,7 +40,7 @@ export default function Login() {
       login(res.data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Қате орын алды');
+      setError(err.response?.data?.error || 'Произошла ошибка');
     }
     setLoading(false);
   };
@@ -64,12 +64,12 @@ export default function Login() {
             fontSize: 24, fontWeight: 800, color: '#fff', margin: '0 auto 12px'
           }}>F</div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-1)', marginBottom: 4 }}>Freelanzer</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-3)' }}>IT фриланс платформасы · АЖ-49</p>
+          <p style={{ fontSize: 13, color: 'var(--text-3)' }}>IT фриланс платформа · АЖ-49</p>
         </div>
 
         {/* Demo quick-login */}
         <div style={{ background: 'var(--bg-2)', borderRadius: 12, padding: 14, marginBottom: 20 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Demo аккаунттар</p>
+          <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Demo аккаунты</p>
           <div style={{ display: 'flex', gap: 8 }}>
             {DEMO_ACCOUNTS.map(acc => (
               <button key={acc.email} onClick={() => fillDemo(acc)}
@@ -89,7 +89,7 @@ export default function Login() {
 
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', marginBottom: 24 }}>
-          {[{ key: 'login', label: 'Кіру' }, { key: 'register', label: 'Тіркелу' }].map(t => (
+          {[{ key: 'login', label: 'Войти' }, { key: 'register', label: 'Регистрация' }].map(t => (
             <button key={t.key} onClick={() => setTab(t.key)} style={{
               flex: 1, background: 'none', border: 'none', padding: '10px', fontSize: 14, fontWeight: 600,
               color: tab === t.key ? 'var(--accent)' : 'var(--text-3)',
@@ -118,7 +118,7 @@ export default function Login() {
                 value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px' }} disabled={loading}>
-              {loading ? 'Кіруде...' : 'Кіру'}
+              {loading ? 'Вход...' : 'Войти'}
             </button>
           </form>
         )}
@@ -127,8 +127,8 @@ export default function Login() {
           <form onSubmit={handleRegister}>
             <div className="form-grid">
               <div className="form-group full" style={{ marginBottom: 12 }}>
-                <label className="form-label">Аты-жөні *</label>
-                <input className="form-input" placeholder="Асқар Беков" required
+                <label className="form-label">Имя *</label>
+                <input className="form-input" placeholder="Иван Иванов" required
                   value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
               </div>
               <div className="form-group full" style={{ marginBottom: 12 }}>
@@ -142,42 +142,42 @@ export default function Login() {
                   value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
               </div>
               <div className="form-group full" style={{ marginBottom: 12 }}>
-                <label className="form-label">Рөл</label>
+                <label className="form-label">Роль</label>
                 <select className="form-select" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-                  <option value="client">Клиент (жоба тапсырамын)</option>
-                  <option value="freelancer">Фрилансер (жұмыс іздеймін)</option>
+                  <option value="client">Клиент (размещаю заказы)</option>
+                  <option value="freelancer">Фрилансер (ищу работу)</option>
                 </select>
               </div>
               {form.role === 'freelancer' && (
                 <>
                   <div className="form-group full" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Мамандық</label>
+                    <label className="form-label">Специальность</label>
                     <input className="form-input" placeholder="Full-Stack Developer"
                       value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
                   </div>
                   <div className="form-group full" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Технологиялар (үтірмен)</label>
+                    <label className="form-label">Технологии (через запятую)</label>
                     <input className="form-input" placeholder="React, Node.js, Python"
                       value={form.skills} onChange={e => setForm({ ...form, skills: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Сағаттық баға (₸)</label>
+                    <label className="form-label">Ставка в час (₸)</label>
                     <input className="form-input" type="number" placeholder="3000"
                       value={form.hourly_rate} onChange={e => setForm({ ...form, hourly_rate: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Қала</label>
+                    <label className="form-label">Город</label>
                     <input className="form-input" placeholder="Алматы"
                       value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} />
                   </div>
                   <div style={{ gridColumn: '1/-1', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 8, padding: 12, fontSize: 12, color: 'var(--text-3)', marginBottom: 12 }}>
-                    ℹ️ Фрилансер ретінде тіркелгеннен кейін Admin бекітуі керек. Бекітілгенше платформада жұмыс іздей алмайсыз.
+                    ℹ️ После регистрации в качестве фрилансера необходимо одобрение администратора. До одобрения вы не сможете искать работу на платформе.
                   </div>
                 </>
               )}
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px' }} disabled={loading}>
-              {loading ? 'Тіркелуде...' : 'Тіркелу'}
+              {loading ? 'Регистрация...' : 'Зарегистрироваться'}
             </button>
           </form>
         )}

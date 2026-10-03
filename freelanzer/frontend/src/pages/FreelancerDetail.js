@@ -79,7 +79,7 @@ export default function FreelancerDetail() {
     await load();
   };
 
-  if (!freelancer) return <div className="loading">Жүктелуде...</div>;
+  if (!freelancer) return <div className="loading">Загрузка...</div>;
 
   const skills = freelancer.skills ? freelancer.skills.split(',').filter(Boolean) : [];
   const avgRating = freelancer.avgRating || 0;
@@ -90,7 +90,7 @@ export default function FreelancerDetail() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
         <Link to="/freelancers" className="btn btn-ghost btn-sm">
-          <ArrowLeft size={14} /> Артқа
+          <ArrowLeft size={14} /> Назад
         </Link>
         <span style={{ color: 'var(--text-3)', fontSize: 12 }}>/</span>
         <span style={{ fontSize: 13, color: 'var(--text-2)' }}>{freelancer.name}</span>
@@ -115,7 +115,7 @@ export default function FreelancerDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <StarRating rating={avgRating} size={16} />
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{avgRating > 0 ? avgRating : '—'}</span>
-                  <span style={{ fontSize: 13, color: 'var(--text-3)' }}>({reviews.length} пікір)</span>
+                  <span style={{ fontSize: 13, color: 'var(--text-3)' }}>({reviews.length} отзывов)</span>
                 </div>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function FreelancerDetail() {
             )}
             {skills.length > 0 && (
               <div>
-                <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 8, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Технологиялар</p>
+                <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 8, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Технологии</p>
                 <div className="skills-list">
                   {skills.map((s, i) => <span key={i} className="skill-tag">{s.trim()}</span>)}
                 </div>
@@ -138,7 +138,7 @@ export default function FreelancerDetail() {
               <p className="card-title" style={{ marginBottom: 0 }}>Портфолио ({portfolio.length})</p>
               {isOwn && (
                 <button className="btn btn-secondary btn-sm" onClick={() => setShowPortfolioForm(o => !o)}>
-                  <Plus size={13} /> Жаңа жұмыс
+                  <Plus size={13} /> Новая работа
                 </button>
               )}
             </div>
@@ -148,31 +148,31 @@ export default function FreelancerDetail() {
                 <form onSubmit={addPortfolio}>
                   <div className="form-grid" style={{ gap: 12 }}>
                     <div className="form-group full">
-                      <label className="form-label">Жұмыс атауы *</label>
-                      <input className="form-input" placeholder="E-commerce платформасы" required
+                      <label className="form-label">Название работы *</label>
+                      <input className="form-input" placeholder="E-commerce платформа" required
                         value={portForm.title} onChange={e => setPortForm({ ...portForm, title: e.target.value })} />
                     </div>
                     <div className="form-group full">
-                      <label className="form-label">Сипаттама</label>
-                      <textarea className="form-textarea" placeholder="Жұмыс туралы..."
+                      <label className="form-label">Описание</label>
+                      <textarea className="form-textarea" placeholder="О работе..."
                         value={portForm.description} onChange={e => setPortForm({ ...portForm, description: e.target.value })} style={{ minHeight: 70 }} />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Технологиялар (үтірмен)</label>
+                      <label className="form-label">Технологии (через запятую)</label>
                       <input className="form-input" placeholder="React, Node.js, PostgreSQL"
                         value={portForm.tech} onChange={e => setPortForm({ ...portForm, tech: e.target.value })} />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Сілтеме (URL)</label>
+                      <label className="form-label">Ссылка (URL)</label>
                       <input className="form-input" placeholder="https://github.com/..."
                         value={portForm.url} onChange={e => setPortForm({ ...portForm, url: e.target.value })} />
                     </div>
                   </div>
                   <div className="form-actions" style={{ marginTop: 12 }}>
                     <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
-                      {submitting ? 'Сақталуда...' : 'Сақтау'}
+                      {submitting ? 'Сохранение...' : 'Сохранить'}
                     </button>
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPortfolioForm(false)}>Болдырмау</button>
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowPortfolioForm(false)}>Отмена</button>
                   </div>
                 </form>
               </div>
@@ -181,7 +181,7 @@ export default function FreelancerDetail() {
             {portfolio.length === 0 && !showPortfolioForm && (
               <div className="empty" style={{ padding: 30 }}>
                 <div className="empty-icon">💼</div>
-                <div>Портфолио жоқ</div>
+                <div>Нет портфолио</div>
               </div>
             )}
 
@@ -203,7 +203,7 @@ export default function FreelancerDetail() {
                       <button
                         onClick={() => deletePortfolio(item.id)}
                         style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 2 }}
-                        title="Жою"
+                        title="Удалить"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -225,7 +225,7 @@ export default function FreelancerDetail() {
                         style={{ justifyContent: 'center', marginTop: 'auto', fontSize: 12 }}
                         onClick={e => e.stopPropagation()}
                       >
-                        <ExternalLink size={12} /> Қарау
+                        <ExternalLink size={12} /> Посмотреть
                       </a>
                     )}
                   </div>
@@ -237,19 +237,19 @@ export default function FreelancerDetail() {
           {/* Reviews */}
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <p className="card-title" style={{ marginBottom: 0 }}>Пікірлер ({reviews.length})</p>
+              <p className="card-title" style={{ marginBottom: 0 }}>Отзывы ({reviews.length})</p>
               <button className="btn btn-primary btn-sm" onClick={() => setShowForm(!showForm)}>
-                ⭐ Пікір қалдыру
+                ⭐ Оставить отзыв
               </button>
             </div>
 
             {showForm && (
               <div style={{ background: 'var(--surface2)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-                <div className="form-title" style={{ marginBottom: 12 }}>Пікір қалдыру</div>
+                <div className="form-title" style={{ marginBottom: 12 }}>Оставить отзыв</div>
                 <form onSubmit={submitReview}>
                   <div className="form-group" style={{ marginBottom: 12 }}>
-                    <label className="form-label">Атыңыз *</label>
-                    <input className="form-input" placeholder="Асқар Беков" required
+                    <label className="form-label">Ваше имя *</label>
+                    <input className="form-input" placeholder="Иван Иванов" required
                       value={form.client_name} onChange={e => setForm({ ...form, client_name: e.target.value })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 12 }}>
@@ -257,22 +257,22 @@ export default function FreelancerDetail() {
                     <StarPicker value={form.rating} onChange={v => setForm({ ...form, rating: v })} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 16 }}>
-                    <label className="form-label">Пікір</label>
-                    <textarea className="form-textarea" placeholder="Жұмыс туралы пікіріңізді жазыңыз..."
+                    <label className="form-label">Отзыв</label>
+                    <textarea className="form-textarea" placeholder="Напишите ваш отзыв о работе..."
                       value={form.comment} onChange={e => setForm({ ...form, comment: e.target.value })} />
                   </div>
                   <div className="form-actions">
                     <button type="submit" className="btn btn-primary" disabled={submitting}>
-                      {submitting ? 'Жіберілуде...' : 'Жіберу'}
+                      {submitting ? 'Отправка...' : 'Отправить'}
                     </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Болдырмау</button>
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Отмена</button>
                   </div>
                 </form>
               </div>
             )}
 
             {reviews.length === 0 && !showForm && (
-              <div className="empty"><div className="empty-icon">⭐</div><div>Пікір жоқ</div></div>
+              <div className="empty"><div className="empty-icon">⭐</div><div>Нет отзывов</div></div>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -289,7 +289,7 @@ export default function FreelancerDetail() {
                   </div>
                   {r.comment && <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6 }}>{r.comment}</p>}
                   <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 6 }}>
-                    {new Date(r.created_at).toLocaleDateString('kk-KZ')}
+                    {new Date(r.created_at).toLocaleDateString('ru-RU')}
                   </p>
                 </div>
               ))}
@@ -309,28 +309,28 @@ export default function FreelancerDetail() {
                 </span>
               </div>
               <div className="meta-row">
-                <span className="meta-key"><Briefcase size={12} style={{ display: 'inline', marginRight: 4 }} />Жобалар</span>
+                <span className="meta-key"><Briefcase size={12} style={{ display: 'inline', marginRight: 4 }} />Проектов</span>
                 <span className="meta-val" style={{ fontWeight: 700 }}>{freelancer.jobs_done}</span>
               </div>
               <div className="meta-row">
-                <span className="meta-key"><TrendingUp size={12} style={{ display: 'inline', marginRight: 4 }} />Сағаттық баға</span>
+                <span className="meta-key"><TrendingUp size={12} style={{ display: 'inline', marginRight: 4 }} />Ставка в час</span>
                 <span className="meta-val" style={{ color: 'var(--green)', fontWeight: 700 }}>{Number(freelancer.hourly_rate).toLocaleString()} ₸</span>
               </div>
               <div className="meta-row">
-                <span className="meta-key"><MapPin size={12} style={{ display: 'inline', marginRight: 4 }} />Орналасқан жер</span>
+                <span className="meta-key"><MapPin size={12} style={{ display: 'inline', marginRight: 4 }} />Местоположение</span>
                 <span className="meta-val">{freelancer.location}</span>
               </div>
               <div className="meta-row">
-                <span className="meta-key">💰 Жалпы табыс</span>
+                <span className="meta-key">💰 Общий доход</span>
                 <span className="meta-val" style={{ color: 'var(--green)', fontWeight: 700 }}>{Number(freelancer.total_earned).toLocaleString()} ₸</span>
               </div>
             </div>
           </div>
 
           <div className="card">
-            <p className="card-title">Іс-әрекет</p>
+            <p className="card-title">Действия</p>
             <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setShowForm(true)}>
-              ⭐ Пікір қалдыру
+              ⭐ Оставить отзыв
             </button>
           </div>
         </div>

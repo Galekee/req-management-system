@@ -7,7 +7,7 @@ import { useAuth } from '../AuthContext';
 
 const ROLE_LABELS = { admin: 'Админ', client: 'Клиент', freelancer: 'Фрилансер' };
 const ROLE_COLORS = { admin: '#ef4444', client: '#6366f1', freelancer: '#10b981' };
-const STATUS_LABELS = { open: 'Ашық', in_progress: 'Жүріп жатыр', completed: 'Аяқталды' };
+const STATUS_LABELS = { open: 'Открытый', in_progress: 'В процессе', completed: 'Завершён' };
 const STATUS_COLORS = { open: '#6366f1', in_progress: '#f59e0b', completed: '#10b981' };
 
 export default function AdminPanel() {
@@ -31,7 +31,7 @@ export default function AdminPanel() {
       setProjects(projectsRes.data);
       setStats(statsRes.data);
     } catch {
-      showToast('Деректерді жүктеу қатесі', 'error');
+      showToast('Ошибка загрузки данных', 'error');
     } finally {
       setLoading(false);
     }
@@ -42,50 +42,50 @@ export default function AdminPanel() {
   const approve = async (id) => {
     try {
       await axios.put(`/api/admin/users/${id}/approve`);
-      showToast('Фрилансер бекітілді', 'success');
+      showToast('Фрилансер одобрен', 'success');
       loadAll();
     } catch {
-      showToast('Бекіту қатесі', 'error');
+      showToast('Ошибка одобрения', 'error');
     }
   };
 
   const reject = async (id) => {
     try {
       await axios.put(`/api/admin/users/${id}/reject`);
-      showToast('Пайдаланушы блокталды', 'success');
+      showToast('Пользователь заблокирован', 'success');
       loadAll();
     } catch {
-      showToast('Қате орын алды', 'error');
+      showToast('Произошла ошибка', 'error');
     }
   };
 
   const deleteUser = async (id) => {
-    if (!window.confirm('Пайдаланушыны жою керек пе?')) return;
+    if (!window.confirm('Удалить пользователя?')) return;
     try {
       await axios.delete(`/api/admin/users/${id}`);
-      showToast('Пайдаланушы жойылды', 'success');
+      showToast('Пользователь удалён', 'success');
       loadAll();
     } catch {
-      showToast('Жою қатесі', 'error');
+      showToast('Ошибка удаления', 'error');
     }
   };
 
   const deleteProject = async (id) => {
-    if (!window.confirm('Жобаны жою керек пе?')) return;
+    if (!window.confirm('Удалить проект?')) return;
     try {
       await axios.delete(`/api/projects/${id}`);
-      showToast('Жоба жойылды', 'success');
+      showToast('Проект удалён', 'success');
       loadAll();
     } catch {
-      showToast('Жою қатесі', 'error');
+      showToast('Ошибка удаления', 'error');
     }
   };
 
   const pendingCount = users.filter(u => u.role === 'freelancer' && !u.is_approved).length;
 
   const TABS = [
-    { key: 'users', label: 'Барлық пайдаланушылар', icon: <Users size={15} /> },
-    { key: 'projects', label: 'Барлық жобалар', icon: <Briefcase size={15} /> },
+    { key: 'users', label: 'Все пользователи', icon: <Users size={15} /> },
+    { key: 'projects', label: 'Все проекты', icon: <Briefcase size={15} /> },
     { key: 'stats', label: 'Статистика', icon: <BarChart2 size={15} /> },
   ];
 
@@ -96,9 +96,9 @@ export default function AdminPanel() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <Shield size={20} color="var(--accent)" />
-            <h1 className="page-title" style={{ margin: 0 }}>Админ панелі</h1>
+            <h1 className="page-title" style={{ margin: 0 }}>Панель администратора</h1>
           </div>
-          <p className="page-sub">Платформаны басқару орталығы</p>
+          <p className="page-sub">Центр управления платформой</p>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export default function AdminPanel() {
           color: '#f59e0b', fontWeight: 600, fontSize: 13
         }}>
           <AlertTriangle size={16} />
-          ⚠️ {pendingCount} фрилансер бекітуді күтуде
+          ⚠️ {pendingCount} фрилансер ожидают одобрения
         </div>
       )}
 
@@ -145,7 +145,7 @@ export default function AdminPanel() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {users.length === 0 && (
-              <div className="empty"><div className="empty-icon">👥</div><div>Пайдаланушы жоқ</div></div>
+              <div className="empty"><div className="empty-icon">👥</div><div>Нет пользователей</div></div>
             )}
             {users.map(u => (
               <div key={u.id} className="card" style={{
@@ -175,7 +175,7 @@ export default function AdminPanel() {
                         fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 999,
                         background: u.is_approved ? '#10b98122' : '#f59e0b22',
                         color: u.is_approved ? '#10b981' : '#f59e0b'
-                      }}>{u.is_approved ? 'Бекітілді' : 'Күтуде'}</span>
+                      }}>{u.is_approved ? 'Одобрен' : 'На проверке'}</span>
                     )}
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>{u.email}</div>
@@ -184,16 +184,16 @@ export default function AdminPanel() {
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                   {u.role === 'freelancer' && !u.is_approved && (
                     <button className="btn btn-primary btn-sm" onClick={() => approve(u.id)} style={{ gap: 4 }}>
-                      <CheckCircle size={13} /> Бекіту
+                      <CheckCircle size={13} /> Одобрить
                     </button>
                   )}
                   {u.role === 'freelancer' && u.is_approved && (
                     <button className="btn btn-secondary btn-sm" onClick={() => reject(u.id)} style={{ gap: 4 }}>
-                      <XCircle size={13} /> Өшіру
+                      <XCircle size={13} /> Отклонить
                     </button>
                   )}
                   {u.id !== me?.id && (
-                    <button className="btn btn-danger btn-sm" onClick={() => deleteUser(u.id)} title="Жою">
+                    <button className="btn btn-danger btn-sm" onClick={() => deleteUser(u.id)} title="Удалить">
                       <Trash2 size={13} />
                     </button>
                   )}
@@ -213,7 +213,7 @@ export default function AdminPanel() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {projects.length === 0 && (
-              <div className="empty"><div className="empty-icon">📁</div><div>Жоба жоқ</div></div>
+              <div className="empty"><div className="empty-icon">📁</div><div>Нет проектов</div></div>
             )}
             {projects.map(p => (
               <div key={p.id} className="card" style={{
@@ -242,7 +242,7 @@ export default function AdminPanel() {
                   </div>
                 </div>
 
-                <button className="btn btn-danger btn-sm" onClick={() => deleteProject(p.id)} title="Жою">
+                <button className="btn btn-danger btn-sm" onClick={() => deleteProject(p.id)} title="Удалить">
                   <Trash2 size={13} />
                 </button>
               </div>
@@ -260,12 +260,12 @@ export default function AdminPanel() {
         ) : (
           <div>
             {/* Users by role */}
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Пайдаланушылар</h3>
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Пользователи</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 28 }}>
               {[
-                { label: 'Барлығы', value: stats.totalUsers, color: 'var(--accent)' },
-                { label: 'Күту тізімі', value: stats.pendingApprovals, color: '#f59e0b' },
-                { label: 'Барлық өтінімдер', value: stats.totalProposals, color: '#a855f7' },
+                { label: 'Всего', value: stats.totalUsers, color: 'var(--accent)' },
+                { label: 'На проверке', value: stats.pendingApprovals, color: '#f59e0b' },
+                { label: 'Всего предложений', value: stats.totalProposals, color: '#a855f7' },
               ].map((s, i) => (
                 <div key={i} className="card" style={{ textAlign: 'center', padding: '18px 12px' }}>
                   <div style={{ fontSize: 32, fontWeight: 800, color: s.color }}>{s.value ?? 0}</div>
@@ -275,11 +275,11 @@ export default function AdminPanel() {
             </div>
 
             {/* Projects by status */}
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Жобалар</h3>
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Проекты</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 28 }}>
               <div className="card" style={{ textAlign: 'center', padding: '18px 12px' }}>
                 <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--accent)' }}>{stats.totalProjects ?? 0}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 6 }}>Барлық жобалар</div>
+                <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 6 }}>Всего проектов</div>
               </div>
               {(stats.byStatus || []).map((s, i) => (
                 <div key={i} className="card" style={{ textAlign: 'center', padding: '18px 12px' }}>
@@ -292,7 +292,7 @@ export default function AdminPanel() {
             {/* By category */}
             {stats.byCategory?.length > 0 && (
               <>
-                <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Санат бойынша</h3>
+                <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>По категориям</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10 }}>
                   {stats.byCategory.map((c, i) => (
                     <div key={i} className="card" style={{ textAlign: 'center', padding: '14px 10px' }}>

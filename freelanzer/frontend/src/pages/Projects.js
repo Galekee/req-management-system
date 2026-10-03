@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { MapPin, Clock, Users } from 'lucide-react';
 import axios from 'axios';
 
-const CAT_LABELS = { web: 'Веб', mobile: 'Мобильді', design: 'Дизайн', bot: 'Бот', other: 'Басқа' };
-const STATUS_LABELS = { open: 'Ашық', in_progress: 'Орындалуда', completed: 'Аяқталған', cancelled: 'Бас тартылған' };
+const CAT_LABELS = { web: 'Веб', mobile: 'Мобильное', design: 'Дизайн', bot: 'Бот', other: 'Другое' };
+const STATUS_LABELS = { open: 'Открытый', in_progress: 'В работе', completed: 'Завершён', cancelled: 'Отменён' };
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -27,39 +27,39 @@ export default function Projects() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Жобалар</h1>
-          <p className="page-sub">{filtered.length} жоба табылды</p>
+          <h1 className="page-title">Проекты</h1>
+          <p className="page-sub">{filtered.length} проектов найдено</p>
         </div>
-        <Link to="/projects/new" className="btn btn-primary">+ Жоба жариялау</Link>
+        <Link to="/projects/new" className="btn btn-primary">+ Опубликовать проект</Link>
       </div>
 
       <div className="filters-bar">
         <input
           className="search-input"
-          placeholder="🔍  Жоба іздеу..."
+          placeholder="🔍  Поиск проектов..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
         <select className="filter-select" value={cat} onChange={e => setCat(e.target.value)}>
-          <option value="">Барлық категория</option>
+          <option value="">Все категории</option>
           <option value="web">Веб</option>
-          <option value="mobile">Мобильді</option>
+          <option value="mobile">Мобильное</option>
           <option value="design">Дизайн</option>
           <option value="bot">Бот</option>
-          <option value="other">Басқа</option>
+          <option value="other">Другое</option>
         </select>
         <select className="filter-select" value={status} onChange={e => setStatus(e.target.value)}>
-          <option value="">Барлық статус</option>
-          <option value="open">Ашық</option>
-          <option value="in_progress">Орындалуда</option>
-          <option value="completed">Аяқталған</option>
+          <option value="">Все статусы</option>
+          <option value="open">Открытый</option>
+          <option value="in_progress">В работе</option>
+          <option value="completed">Завершён</option>
         </select>
       </div>
 
       {filtered.length === 0 ? (
         <div className="empty">
           <div className="empty-icon">📋</div>
-          <div>Жоба табылмады</div>
+          <div>Проекты не найдены</div>
         </div>
       ) : (
         <div className="projects-grid">
@@ -99,7 +99,7 @@ function ProjectCard({ project: p }) {
           <div>
             <div className="project-budget">
               {p.budget.toLocaleString()} ₸
-              <span> / жоба</span>
+              <span> / проект</span>
             </div>
           </div>
           <div className="project-client">

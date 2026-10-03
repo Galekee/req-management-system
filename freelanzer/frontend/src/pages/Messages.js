@@ -8,11 +8,11 @@ function timeAgo(dateStr) {
   const d = new Date(dateStr);
   const diff = Date.now() - d.getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Қазір';
-  if (mins < 60) return `${mins} мин бұрын`;
+  if (mins < 1) return 'Только что';
+  if (mins < 60) return `${mins} мин назад`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs} сағ бұрын`;
-  return d.toLocaleDateString('kk-KZ');
+  if (hrs < 24) return `${hrs} ч назад`;
+  return d.toLocaleDateString('ru-RU');
 }
 
 export default function Messages() {
@@ -84,8 +84,8 @@ export default function Messages() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Хабарламалар</h1>
-          <p className="page-sub">Жобалар бойынша хат алмасу</p>
+          <h1 className="page-title">Сообщения</h1>
+          <p className="page-sub">Переписка по проектам</p>
         </div>
       </div>
 
@@ -93,12 +93,12 @@ export default function Messages() {
         {/* Left: conversation list */}
         <div className="conv-list">
           {loading && (
-            <div className="loading" style={{ padding: 40 }}>Жүктелуде...</div>
+            <div className="loading" style={{ padding: 40 }}>Загрузка...</div>
           )}
           {!loading && conversations.length === 0 && (
             <div className="empty" style={{ padding: 40 }}>
               <div className="empty-icon"><MessageSquare size={32} /></div>
-              <div>Хабарлама жоқ</div>
+              <div>Нет сообщений</div>
             </div>
           )}
           {conversations.map(conv => {
@@ -112,7 +112,7 @@ export default function Messages() {
                 <div className="conv-avatar">{(conv.other_user_name || '?')[0]}</div>
                 <div className="conv-info">
                   <div className="conv-name">{conv.other_user_name}</div>
-                  <div className="conv-project">{conv.project_title || `Жоба #${conv.project_id}`}</div>
+                  <div className="conv-project">{conv.project_title || `Проект #${conv.project_id}`}</div>
                   <div className="conv-last">{conv.last_message}</div>
                 </div>
                 <div className="conv-meta">
@@ -131,7 +131,7 @@ export default function Messages() {
           {!selected ? (
             <div className="empty" style={{ height: '100%' }}>
               <div className="empty-icon"><MessageSquare size={40} /></div>
-              <div>Сол жақтан сұхбат таңдаңыз</div>
+              <div>Выберите диалог слева</div>
             </div>
           ) : (
             <>
@@ -141,14 +141,14 @@ export default function Messages() {
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>{selected.other_user_name}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-3)' }}>{selected.project_title || `Жоба #${selected.project_id}`}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-3)' }}>{selected.project_title || `Проект #${selected.project_id}`}</div>
                 </div>
               </div>
 
               <div className="chat-messages">
                 {messages.length === 0 && (
                   <div className="empty" style={{ marginTop: 40 }}>
-                    <div>Хабарлама жіберіңіз</div>
+                    <div>Отправьте сообщение</div>
                   </div>
                 )}
                 {messages.map(m => {
@@ -172,13 +172,13 @@ export default function Messages() {
               <form className="chat-input-row" onSubmit={sendMessage}>
                 <input
                   className="form-input chat-input"
-                  placeholder="Хабарлама жазыңыз..."
+                  placeholder="Напишите сообщение..."
                   value={text}
                   onChange={e => setText(e.target.value)}
                   disabled={sending}
                 />
                 <button type="submit" className="btn btn-primary" disabled={sending || !text.trim()}>
-                  <Send size={14} /> Жіберу
+                  <Send size={14} /> Отправить
                 </button>
               </form>
             </>
