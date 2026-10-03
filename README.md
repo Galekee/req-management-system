@@ -17,6 +17,7 @@
 ```bash
 cd backend
 npm install
+node --experimental-sqlite src/index.js
 npm start
 ```
 
