@@ -40,16 +40,45 @@ export default function ClientDashboard() {
 
   if (loading) return <div className="loading">Загрузка...</div>;
 
+  const totalBudget = projects.reduce((sum, p) => sum + Number(p.budget || 0), 0);
+
   return (
     <div>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Кабинет клиента</h1>
-          <p className="page-sub">Привет, {user.name}! Управляйте своими проектами</p>
+      {/* Profile card */}
+      <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 24 }}>
+        <div style={{
+          width: 60, height: 60, borderRadius: '50%', flexShrink: 0,
+          background: 'var(--accent)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 24, fontWeight: 800, color: '#fff'
+        }}>{user.name?.[0]}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <span style={{ fontWeight: 700, fontSize: 18, color: 'var(--text)' }}>{user.name}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(99,102,241,0.15)', color: 'var(--accent)' }}>Клиент</span>
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 8 }}>{user.email}</div>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <div>
+              <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>{projects.length}</span>
+              <span style={{ fontSize: 12, color: 'var(--text-3)', marginLeft: 5 }}>проектов</span>
+            </div>
+            <div>
+              <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--green)' }}>{totalBudget.toLocaleString()} ₸</span>
+              <span style={{ fontSize: 12, color: 'var(--text-3)', marginLeft: 5 }}>общий бюджет</span>
+            </div>
+          </div>
         </div>
         <Link to="/projects/new" className="btn btn-primary">
           <PlusCircle size={14} /> Новый проект
         </Link>
+      </div>
+
+      <div className="page-header" style={{ marginBottom: 16 }}>
+        <div>
+          <h1 className="page-title">Мои проекты</h1>
+          <p className="page-sub">Управляйте своими проектами</p>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1.6fr' : '1fr', gap: 20 }}>

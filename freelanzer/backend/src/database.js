@@ -72,9 +72,11 @@ db.exec(`
     hourly_rate INTEGER DEFAULT 0,
     location TEXT DEFAULT 'Қазақстан',
     avatar_color TEXT DEFAULT '#6366f1',
+    avatar TEXT DEFAULT '',
     total_earned INTEGER DEFAULT 0,
     jobs_done INTEGER DEFAULT 0,
     is_approved INTEGER DEFAULT 0,
+    rating REAL DEFAULT 5.0,
     created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
 
@@ -117,6 +119,7 @@ db.exec(`
     title TEXT NOT NULL,
     message TEXT DEFAULT '',
     user_id TEXT,
+    project_id TEXT,
     is_read INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now', '+5 hours'))
   );
@@ -132,6 +135,12 @@ if (count.c === 0) {
     { id: 'u3', email: 'bekarys@mail.kz',     password: 'free123',   role: 'freelancer', name: 'Бекарыс Балапан', is_approved: 1 },
     { id: 'u4', email: 'saya@mail.kz',        password: 'free123',   role: 'freelancer', name: 'Саят Газезов',   is_approved: 1 },
     { id: 'u5', email: 'asel@mail.kz',        password: 'free123',   role: 'freelancer', name: 'Асель Нурова',   is_approved: 0 },
+    { id: 'u6', email: 'arman@mail.kz',       password: 'free123',   role: 'freelancer', name: 'Арман Сейтов',   is_approved: 1 },
+    { id: 'u7', email: 'zarina@mail.kz',      password: 'free123',   role: 'freelancer', name: 'Зарина Ахметова', is_approved: 1 },
+    { id: 'u8', email: 'dauren@mail.kz',      password: 'free123',   role: 'freelancer', name: 'Дәурен Қасымов', is_approved: 1 },
+    { id: 'u9', email: 'ainur@mail.kz',       password: 'free123',   role: 'freelancer', name: 'Айнур Жакупова', is_approved: 1 },
+    { id: 'u10', email: 'ruslan@mail.kz',     password: 'free123',   role: 'freelancer', name: 'Руслан Байжанов', is_approved: 1 },
+    { id: 'u11', email: 'madina@mail.kz',     password: 'free123',   role: 'freelancer', name: 'Мадина Нурланова', is_approved: 1 },
   ];
   const insertUser = db.prepare('INSERT INTO users (id,email,password,role,name,is_approved) VALUES (?,?,?,?,?,?)');
   for (const u of users) insertUser.run(u.id, u.email, u.password, u.role, u.name, u.is_approved);
@@ -189,12 +198,18 @@ if (count.c === 0) {
 
   // ── Freelancers ────────────────────────────────────────
   const freelancers = [
-    { id:'f1', user_id:'u3', name:'Бекарыс Балапан', title:'Full-Stack Developer',       bio:'React, Node.js және мобильді қосымшалар бойынша 3 жыл тәжірибе. 20+ жоба сәтті аяқтадым.', skills:'React,Node.js,React Native,PostgreSQL', hourly_rate:5000, location:'Алматы', avatar_color:'#6366f1', total_earned:420000, jobs_done:8,  is_approved:1 },
-    { id:'f2', user_id:'u4', name:'Саят Газезов',    title:'UI/UX Designer & Frontend',  bio:'Figma, HTML/CSS және Vue.js бойынша маман. Корпоративтік сайттар мен мобильді дизайн.',     skills:'Figma,HTML,CSS,Vue.js,JavaScript',      hourly_rate:4000, location:'Астана', avatar_color:'#a855f7', total_earned:155000, jobs_done:5,  is_approved:1 },
-    { id:'f3', user_id:'u5', name:'Асель Нурова',    title:'Backend Developer',           bio:'Python және Django бойынша маман. REST API, микросервистер.',                                skills:'Python,Django,PostgreSQL,Docker',        hourly_rate:4500, location:'Алматы', avatar_color:'#ec4899', total_earned:0,      jobs_done:0,  is_approved:0 },
+    { id:'f1', user_id:'u3', name:'Бекарыс Балапан', title:'Full-Stack Developer',       bio:'React, Node.js және мобильді қосымшалар бойынша 3 жыл тәжірибе. 20+ жоба сәтті аяқтадым.', skills:'React,Node.js,React Native,PostgreSQL', hourly_rate:5000, location:'Алматы', avatar_color:'#6366f1', total_earned:420000, jobs_done:8,  is_approved:1, rating:4.5 },
+    { id:'f2', user_id:'u4', name:'Саят Газезов',    title:'UI/UX Designer & Frontend',  bio:'Figma, HTML/CSS және Vue.js бойынша маман. Корпоративтік сайттар мен мобильді дизайн.',     skills:'Figma,HTML,CSS,Vue.js,JavaScript',      hourly_rate:4000, location:'Астана', avatar_color:'#a855f7', total_earned:155000, jobs_done:5,  is_approved:1, rating:5.0 },
+    { id:'f3', user_id:'u5', name:'Асель Нурова',    title:'Backend Developer',           bio:'Python және Django бойынша маман. REST API, микросервистер.',                                skills:'Python,Django,PostgreSQL,Docker',        hourly_rate:4500, location:'Алматы', avatar_color:'#ec4899', total_earned:0,      jobs_done:0,  is_approved:0, rating:5.0 },
+    { id:'f4', user_id:'u6', name:'Арман Сейтов',    title:'Mobile Developer',            bio:'iOS и Android разработка. Swift, Kotlin, React Native. 5 лет опыта, 30+ приложений.',      skills:'Swift,Kotlin,React Native,Firebase',    hourly_rate:6000, location:'Алматы', avatar_color:'#f59e0b', total_earned:580000, jobs_done:12, is_approved:1, rating:4.9 },
+    { id:'f5', user_id:'u7', name:'Зарина Ахметова', title:'Data Scientist',              bio:'Machine Learning, Python, анализ данных. Работала с крупными казахстанскими компаниями.',   skills:'Python,TensorFlow,pandas,SQL',          hourly_rate:7000, location:'Астана', avatar_color:'#ec4899', total_earned:720000, jobs_done:9,  is_approved:1, rating:4.8 },
+    { id:'f6', user_id:'u8', name:'Дәурен Қасымов',  title:'DevOps Engineer',             bio:'Docker, Kubernetes, CI/CD. Настройка облачной инфраструктуры на AWS и GCP.',               skills:'Docker,Kubernetes,AWS,Linux,CI/CD',     hourly_rate:8000, location:'Алматы', avatar_color:'#14b8a6', total_earned:950000, jobs_done:15, is_approved:1, rating:5.0 },
+    { id:'f7', user_id:'u9', name:'Айнур Жакупова',  title:'UI/UX Designer',              bio:'Продуктовый дизайн, Figma, пользовательские исследования. Создаю интуитивные интерфейсы.', skills:'Figma,Adobe XD,Sketch,Prototyping',     hourly_rate:4500, location:'Шымкент', avatar_color:'#8b5cf6', total_earned:310000, jobs_done:18, is_approved:1, rating:4.7 },
+    { id:'f8', user_id:'u10', name:'Руслан Байжанов', title:'Blockchain Developer',       bio:'Solidity, Web3.js, смарт-контракты. Разработка DeFi и NFT проектов.',                      skills:'Solidity,Web3.js,Ethereum,Node.js',     hourly_rate:9000, location:'Алматы', avatar_color:'#f97316', total_earned:1200000, jobs_done:7, is_approved:1, rating:4.6 },
+    { id:'f9', user_id:'u11', name:'Мадина Нурланова', title:'QA Engineer',               bio:'Ручное и автоматизированное тестирование. Selenium, Cypress, Postman. Найду любой баг!',   skills:'Selenium,Cypress,Postman,JIRA',         hourly_rate:3500, location:'Астана', avatar_color:'#06b6d4', total_earned:195000, jobs_done:22, is_approved:1, rating:4.9 },
   ];
-  const insertF = db.prepare('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,total_earned,jobs_done,is_approved) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
-  for (const f of freelancers) insertF.run(f.id,f.user_id,f.name,f.title,f.bio,f.skills,f.hourly_rate,f.location,f.avatar_color,f.total_earned,f.jobs_done,f.is_approved);
+  const insertF = db.prepare('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,total_earned,jobs_done,is_approved,rating) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
+  for (const f of freelancers) insertF.run(f.id,f.user_id,f.name,f.title,f.bio,f.skills,f.hourly_rate,f.location,f.avatar_color,f.total_earned,f.jobs_done,f.is_approved,f.rating);
 
   // ── Portfolio ──────────────────────────────────────────
   const portfolio = [

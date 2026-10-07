@@ -102,6 +102,51 @@ export default function FreelancerDashboard() {
         </div>
       </div>
 
+      {/* Freelancer profile card */}
+      {profile && (
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 24 }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: 14, flexShrink: 0,
+            background: profile.avatar_color || 'var(--accent)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 24, fontWeight: 800, color: '#fff', overflow: 'hidden'
+          }}>
+            {profile.avatar
+              ? <img src={profile.avatar} alt={profile.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : profile.name?.[0]}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
+              <span style={{ fontWeight: 700, fontSize: 17, color: 'var(--text)' }}>{profile.name}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(16,185,129,0.15)', color: 'var(--green)' }}>Фрилансер</span>
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 4 }}>{profile.title}</div>
+            {profile.location && <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>📍 {profile.location}</div>}
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div>
+                <span style={{ fontWeight: 700, fontSize: 15, color: '#f59e0b' }}>{'★'.repeat(Math.round(profile.rating || profile.avgRating || 5))}</span>
+                <span style={{ fontSize: 12, color: 'var(--text-3)', marginLeft: 4 }}>{profile.rating || profile.avgRating || 0}</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--accent)' }}>{profile.jobs_done}</span>
+                <span style={{ fontSize: 12, color: 'var(--text-3)', marginLeft: 5 }}>проектов</span>
+              </div>
+              <div>
+                <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--green)' }}>{Number(profile.total_earned).toLocaleString()} ₸</span>
+                <span style={{ fontSize: 12, color: 'var(--text-3)', marginLeft: 5 }}>заработано</span>
+              </div>
+            </div>
+            {profile.skills && (
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginTop: 10 }}>
+                {profile.skills.split(',').filter(Boolean).slice(0, 5).map((s, i) => (
+                  <span key={i} className="skill-tag">{s.trim()}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', marginBottom: 20 }}>
         {[

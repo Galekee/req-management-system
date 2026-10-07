@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bell, CheckCheck, Briefcase, FileText, Star, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const TYPE_ICONS = {
@@ -28,6 +29,7 @@ function timeAgo(dateStr) {
 }
 
 export default function Notifications() {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,6 +48,15 @@ export default function Notifications() {
   const markOne = async (id) => {
     await axios.put(`/api/notifications/${id}/read`);
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: 1 } : n));
+  };
+
+  const handleClick = async (n) => {
+    if (!n.is_read) await markOne(n.id);
+    if (n.project_id) {
+      navigate(`/projects/${n.project_id}`);
+    } else if (n.type === 'message') {
+      navigate('/messages');
+    }
   };
 
   if (loading) return <div className="loading">Загрузка...</div>;
@@ -79,7 +90,7 @@ export default function Notifications() {
         {notifications.map(n => (
           <div
             key={n.id}
-            onClick={() => !n.is_read && markOne(n.id)}
+            onClick={() => handleClick(n)}
             style={{
               display: 'flex',
               gap: 14,
@@ -88,12 +99,12 @@ export default function Notifications() {
               background: n.is_read ? 'var(--bg-1)' : 'var(--bg-2)',
               border: `1px solid ${n.is_read ? 'var(--border)' : 'rgba(99,102,241,0.25)'}`,
               borderRadius: 12,
-              cursor: n.is_read ? 'default' : 'pointer',
+              cursor: 'pointer',
               transition: 'all 0.15s',
               position: 'relative',
             }}
-            onMouseEnter={e => { if (!n.is_read) e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)'; }}
-            onMouseLeave={e => { if (!n.is_read) e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'; }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = n.is_read ? 'var(--border)' : 'rgba(99,102,241,0.25)'; }}
           >
             {/* Unread dot */}
             {!n.is_read && (

@@ -14,6 +14,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('login');
   const [form, setForm] = useState({ email: '', password: '', name: '', role: 'client', title: '', skills: '', location: 'Алматы', hourly_rate: '' });
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarBase64, setAvatarBase64] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,12 +33,25 @@ export default function Login() {
     setLoading(false);
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result);
+      setAvatarBase64(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleRegister = async e => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const res = await axios.post('/api/auth/register', form);
+      const payload = { ...form };
+      if (avatarBase64) payload.avatar = avatarBase64;
+      const res = await axios.post('/api/auth/register', payload);
       login(res.data);
       navigate('/');
     } catch (err) {
@@ -169,6 +184,21 @@ export default function Login() {
                     <label className="form-label">Город</label>
                     <input className="form-input" placeholder="Алматы"
                       value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} />
+                  </div>
+                  <div className="form-group full" style={{ marginBottom: 12 }}>
+                    <label className="form-label">Фото (необязательно)</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                      {avatarPreview && (
+                        <div style={{
+                          width: 52, height: 52, borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                          border: '2px solid var(--accent)'
+                        }}>
+                          <img src={avatarPreview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      )}
+                      <input type="file" accept="image/*" onChange={handleAvatarChange}
+                        style={{ fontSize: 12, color: 'var(--text-2)' }} />
+                    </div>
                   </div>
                   <div style={{ gridColumn: '1/-1', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 8, padding: 12, fontSize: 12, color: 'var(--text-3)', marginBottom: 12 }}>
                     ℹ️ После регистрации в качестве фрилансера необходимо одобрение администратора. До одобрения вы не сможете искать работу на платформе.

@@ -51,8 +51,8 @@ const server = http.createServer(async (req, res) => {
       .run(id, b.email, b.password, role, b.name, isApproved);
     if (role === 'freelancer') {
       const fid = randomUUID();
-      db.prepare('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,is_approved) VALUES (?,?,?,?,?,?,?,?,?,?)')
-        .run(fid, id, b.name, b.title || 'Фрилансер', b.bio || '', b.skills || '', b.hourly_rate || 0, b.location || 'Қазақстан', '#6366f1', 0);
+      db.prepare('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,avatar,is_approved) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+        .run(fid, id, b.name, b.title || 'Фрилансер', b.bio || '', b.skills || '', b.hourly_rate || 0, b.location || 'Қазақстан', '#6366f1', b.avatar || '', 0);
       db.prepare('INSERT INTO notifications (id,type,title,message,user_id) VALUES (?,?,?,?,?)')
         .run(randomUUID(), 'info', 'Жаңа тіркелу сұранысы', `${b.name} фрилансер ретінде тіркелгісі келеді`, 'u0');
     }
@@ -221,8 +221,8 @@ const server = http.createServer(async (req, res) => {
     db.prepare('INSERT INTO proposals (id,project_id,freelancer_name,freelancer_id,cover_letter,bid_amount,delivery_days) VALUES (?,?,?,?,?,?,?)')
       .run(id, parts[2], b.freelancer_name, b.freelancer_id || null, b.cover_letter, b.bid_amount || 0, b.delivery_days || 7);
     const proj = db.prepare('SELECT title, client_id FROM projects WHERE id=?').get(parts[2]);
-    db.prepare('INSERT INTO notifications (id,type,title,message,user_id) VALUES (?,?,?,?,?)')
-      .run(randomUUID(), 'proposal', 'Жаңа өтінім келді', `"${proj?.title || 'Жоба'}" жобасына ${b.freelancer_name} өтінім берді`, proj?.client_id || null);
+    db.prepare('INSERT INTO notifications (id,type,title,message,user_id,project_id) VALUES (?,?,?,?,?,?)')
+      .run(randomUUID(), 'proposal', 'Жаңа өтінім келді', `"${proj?.title || 'Жоба'}" жобасына ${b.freelancer_name} өтінім берді`, proj?.client_id || null, parts[2]);
     return json(res, db.prepare('SELECT * FROM proposals WHERE id=?').get(id), 201);
   }
 

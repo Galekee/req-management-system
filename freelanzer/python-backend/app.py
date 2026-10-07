@@ -100,9 +100,11 @@ conn.executescript("""
     hourly_rate INTEGER DEFAULT 0,
     location TEXT DEFAULT 'Қазақстан',
     avatar_color TEXT DEFAULT '#6366f1',
+    avatar TEXT DEFAULT '',
     total_earned INTEGER DEFAULT 0,
     jobs_done INTEGER DEFAULT 0,
     is_approved INTEGER DEFAULT 0,
+    rating REAL DEFAULT 5.0,
     created_at TEXT
   );
 
@@ -162,6 +164,12 @@ if count == 0:
         ('u3', 'bekarys@mail.kz',     'free123',  'freelancer', 'Бекарыс Балапан', 1),
         ('u4', 'saya@mail.kz',        'free123',  'freelancer', 'Саят Газезов',    1),
         ('u5', 'asel@mail.kz',        'free123',  'freelancer', 'Асель Нурова',    0),
+        ('u6', 'arman@mail.kz',       'free123',  'freelancer', 'Арман Сейтов',    1),
+        ('u7', 'zarina@mail.kz',      'free123',  'freelancer', 'Зарина Ахметова', 1),
+        ('u8', 'dauren@mail.kz',      'free123',  'freelancer', 'Дәурен Қасымов',  1),
+        ('u9', 'ainur@mail.kz',       'free123',  'freelancer', 'Айнур Жакупова',  1),
+        ('u10','ruslan@mail.kz',      'free123',  'freelancer', 'Руслан Байжанов', 1),
+        ('u11','madina@mail.kz',      'free123',  'freelancer', 'Мадина Нурланова',1),
     ]
     for u in users:
         conn.execute('INSERT INTO users (id,email,password,role,name,is_approved,created_at) VALUES (?,?,?,?,?,?,?)', u + (ts,))
@@ -214,12 +222,18 @@ if count == 0:
         conn.execute('INSERT INTO requirements (id,project_id,title,description,type,priority,status,created_at) VALUES (?,?,?,?,?,?,?,?)', r + (ts,))
 
     freelancers = [
-        ('f1','u3','Бекарыс Балапан','Full-Stack Developer','React, Node.js және мобильді қосымшалар бойынша 3 жыл тәжірибе. 20+ жоба сәтті аяқтадым.','React,Node.js,React Native,PostgreSQL',5000,'Алматы','#6366f1',420000,8,1),
-        ('f2','u4','Саят Газезов','UI/UX Designer & Frontend','Figma, HTML/CSS және Vue.js бойынша маман. Корпоративтік сайттар мен мобильді дизайн.','Figma,HTML,CSS,Vue.js,JavaScript',4000,'Астана','#a855f7',155000,5,1),
-        ('f3','u5','Асель Нурова','Backend Developer','Python және Django бойынша маман. REST API, микросервистер.','Python,Django,PostgreSQL,Docker',4500,'Алматы','#ec4899',0,0,0),
+        ('f1','u3','Бекарыс Балапан','Full-Stack Developer','React, Node.js және мобильді қосымшалар бойынша 3 жыл тәжірибе. 20+ жоба сәтті аяқтадым.','React,Node.js,React Native,PostgreSQL',5000,'Алматы','#6366f1','',420000,8,1,4.5),
+        ('f2','u4','Саят Газезов','UI/UX Designer & Frontend','Figma, HTML/CSS және Vue.js бойынша маман. Корпоративтік сайттар мен мобильді дизайн.','Figma,HTML,CSS,Vue.js,JavaScript',4000,'Астана','#a855f7','',155000,5,1,5.0),
+        ('f3','u5','Асель Нурова','Backend Developer','Python және Django бойынша маман. REST API, микросервистер.','Python,Django,PostgreSQL,Docker',4500,'Алматы','#ec4899','',0,0,0,5.0),
+        ('f4','u6','Арман Сейтов','Mobile Developer','iOS и Android разработка. Swift, Kotlin, React Native. 5 лет опыта, 30+ приложений.','Swift,Kotlin,React Native,Firebase',6000,'Алматы','#f59e0b','',580000,12,1,4.9),
+        ('f5','u7','Зарина Ахметова','Data Scientist','Machine Learning, Python, анализ данных. Работала с крупными казахстанскими компаниями.','Python,TensorFlow,pandas,SQL',7000,'Астана','#ec4899','',720000,9,1,4.8),
+        ('f6','u8','Дәурен Қасымов','DevOps Engineer','Docker, Kubernetes, CI/CD. Настройка облачной инфраструктуры на AWS и GCP.','Docker,Kubernetes,AWS,Linux,CI/CD',8000,'Алматы','#14b8a6','',950000,15,1,5.0),
+        ('f7','u9','Айнур Жакупова','UI/UX Designer','Продуктовый дизайн, Figma, пользовательские исследования. Создаю интуитивные интерфейсы.','Figma,Adobe XD,Sketch,Prototyping',4500,'Шымкент','#8b5cf6','',310000,18,1,4.7),
+        ('f8','u10','Руслан Байжанов','Blockchain Developer','Solidity, Web3.js, смарт-контракты. Разработка DeFi и NFT проектов.','Solidity,Web3.js,Ethereum,Node.js',9000,'Алматы','#f97316','',1200000,7,1,4.6),
+        ('f9','u11','Мадина Нурланова','QA Engineer','Ручное и автоматизированное тестирование. Selenium, Cypress, Postman. Найду любой баг!','Selenium,Cypress,Postman,JIRA',3500,'Астана','#06b6d4','',195000,22,1,4.9),
     ]
     for f in freelancers:
-        conn.execute('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,total_earned,jobs_done,is_approved,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)', f + (ts,))
+        conn.execute('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,avatar,total_earned,jobs_done,is_approved,rating,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', f + (ts,))
 
     portfolio = [
         ('pf1','f1','E-commerce платформа','React + Node.js + PostgreSQL стекінде жасалған онлайн дүкен. 10 000+ өнім, себет, төлем жүйесі.','React,Node.js,PostgreSQL','https://github.com'),
@@ -284,9 +298,9 @@ def register():
                  (uid, b.get('email'), b.get('password'), role, b.get('name'), is_approved, ts))
     if role == 'freelancer':
         fid = new_id()
-        conn.execute('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,is_approved,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        conn.execute('INSERT INTO freelancers (id,user_id,name,title,bio,skills,hourly_rate,location,avatar_color,avatar,is_approved,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
                      (fid, uid, b.get('name'), b.get('title', 'Фрилансер'), b.get('bio', ''),
-                      b.get('skills', ''), b.get('hourly_rate', 0), b.get('location', 'Қазақстан'), '#6366f1', 0, ts))
+                      b.get('skills', ''), b.get('hourly_rate', 0), b.get('location', 'Қазақстан'), '#6366f1', b.get('avatar', ''), 0, ts))
         conn.execute('INSERT INTO notifications (id,type,title,message,user_id,created_at) VALUES (?,?,?,?,?,?)',
                      (new_id(), 'info', 'Жаңа тіркелу сұранысы', f"{b.get('name')} фрилансер ретінде тіркелгісі келеді", 'u0', ts))
     conn.commit()
