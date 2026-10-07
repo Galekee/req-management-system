@@ -12,7 +12,8 @@ const STATUS_COLORS = { open: '#6366f1', in_progress: '#f59e0b', completed: '#10
 
 export default function AdminPanel() {
   const { user: me } = useAuth();
-  const { showToast } = useToast();
+  const { success: toastSuccess, error: toastError } = useToast();
+  const showToast = (msg, type) => type === 'success' ? toastSuccess(msg) : toastError(msg);
   const [tab, setTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -35,7 +36,7 @@ export default function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [toastError]);
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
