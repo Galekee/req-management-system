@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Users, Briefcase, BarChart2, Shield, CheckCircle, XCircle, Trash2, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
-import SkeletonCard from '../components/Skeleton';
+import { SkeletonCard } from '../components/Skeleton';
 import { useToast } from '../components/Toast';
 import { useAuth } from '../AuthContext';
 
